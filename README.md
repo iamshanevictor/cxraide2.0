@@ -1,5 +1,9 @@
 # CXRaide 2.0
 
+CXRaide is currently a public **research demo**, not a clinical service. Hosted results are simulated; the separately downloaded real models run locally. Do not use identifiable patient images or reports for the public showcase. The radiologist sign-in is a future concept, and the present development login is not production identity.
+
+For the current scope and modernization work, start with [requirements](REQUIREMENTS.md), [architecture](docs/architecture/ARCHITECTURE.md), [decisions](docs/architecture/DECISIONS.md), and the [active task queue](PROJECT_TASKS.md). Setup instructions below describe the existing local application.
+
 Automatic Chest X-Ray Pattern Annotation and Classification.
 
 CXRaide 2.0 is a local-first research application with a Vue/Vite frontend and a Flask backend. The backend provides local JWT-style development login and chest X-ray model inference endpoints. Database integration is intentionally disabled for now and will be redesigned later.
