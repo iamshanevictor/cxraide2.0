@@ -1,6 +1,6 @@
 # Architecture
 
-Status: assessed from the repository on 2026-10-27. **Observed** means present in code or documentation; **proposed** is not approved or deployed.
+Status: assessed from the repository on 2026-10-27. **Observed** means present in code or documentation; the target direction was approved on 2026-10-27 but is not implemented or deployed.
 
 ## Observed current system
 
@@ -21,7 +21,7 @@ Deployment: client/vercel.json SPA rewrite; README proposes client/ on Vercel
 Backend production host: not established in this repository
 ```
 
-The Flask model loader uses a process-local background thread, not a durable queue. Local setup scripts install dependencies and default to mock models and development login. A separate research repository reportedly contains training notebooks, data-cleaning steps, weights provenance, and metrics; its URL and correspondence with this code have not been verified here.
+The Flask model loader uses a process-local background thread, not a durable queue. Local setup scripts install dependencies and default to mock models and development login. A separate [model-training repository](https://github.com/iamshanevictor/CXRaide2.0-Model_Training) contains preparation and training notebooks. The exact mapping between this application's displayed metrics, local weights and experiment runs remains unverified.
 
 Important source files: `client/src/router/index.js` (page map and browser guard); `client/src/views/DemoWorkspaceView.vue` (public sample, drawing, exports); `client/src/views/AnnotateView.vue` and `UploadCXRView.vue` (older protected workflows); `client/src/services/modelService.js` (image preparation and prediction HTTP contract); `server/app.py` (Flask application and development login); `server/model_service.py` (mock/real model loading and inference); `client/package.json`, `server/requirements*.txt`, `client/vite.config.js`, and `client/vercel.json` (build and deployment assumptions).
 
@@ -29,15 +29,18 @@ Observed risks: development login accepts a username without verifying a passwor
 
 The demo's current `Load sample` action constructs a synthetic 512×512 gradient/noise image in canvas (`DemoWorkspaceView.vue`), rather than loading a real sample chest X-ray. This differs from the owner's desired showcase and needs a source/permission decision before an asset is added.
 
+The source-backed public demo behavior, API boundary, coordinates, exports, simulation modes, and privacy findings are recorded in [the CX-001 demo contract](DEMO_CONTRACT.md). That note is discovery evidence, not an approved implementation design.
+
 No automated test suite, CI workflow, schema, or migrations were found. Python syntax parsing passed for the two server source files. Builds, lint, runtime inference, model accuracy, hosted operation, and provider accounts were not verified because dependencies and model files were absent and this bootstrap did not install them.
 
-## Proposed target, pending ADR approval
+## Approved target direction, implementation pending
 
 ```text
 Public Vite SPA on a suitable free static host, potentially Vercel
-  -> sample images with verified permission/provenance
+  -> approved sample images with verified permission/provenance
   -> manual annotation and explicitly simulated, non-clinical results
-  -> local export; no identifiable image/report persistence
+  -> local export; no visitor upload or automatic browser image retention
+  -> no identifiable image/report persistence
 
 Local developer/research mode
   -> Python inference with downloaded, trusted weights
@@ -49,7 +52,7 @@ Optional later, only if a real account/data requirement is approved
   -> Python service remains responsible for PyTorch inference
 ```
 
-For the **current** public showcase, a static simulation may remove the need for a hosted backend; that is an option to test, not an implementation decision. Browser simulation must remain clearly labeled. If a hosted mock API is retained, its output contract, resource limits, CORS, abuse controls, and availability require validation. Do not introduce Supabase solely to satisfy a hypothetical future account system.
+For the **current** public showcase, evaluate a static browser simulation first; adoption depends on contract, privacy and parity validation. Browser simulation must remain clearly labeled. If a hosted mock API is retained, its output contract, resource limits, CORS, abuse controls, and availability require validation. Do not introduce Supabase solely to satisfy a hypothetical future account system.
 
 Vercel documents Vite support, but Hobby is for personal, non-commercial use; actual eligibility must be checked by the owner. Supabase Free currently has capacity limits and pauses after inactivity, so it is not a default prerequisite for this demo. Supabase Edge Functions use a Deno-compatible runtime with limited memory/CPU, unlike this Python/PyTorch model. Pricing and limits can change; recheck at a hosting decision. Sources: [Vercel Vite](https://vercel.com/docs/frameworks/frontend/vite), [Vercel Hobby](https://vercel.com/docs/plans/hobby), [Supabase pricing](https://supabase.com/pricing), [Edge runtime](https://supabase.com/docs/guides/functions), [Edge limits](https://supabase.com/docs/guides/functions/limits).
 
@@ -66,7 +69,7 @@ If persistence is later approved, use server-verified identity, explicit Postgre
 
 ## Phased direction
 
-0. Confirm the demo contract, sample-image rights, research-repository link, and public-upload/privacy policy.
+0. Confirm the demo contract and approved public-upload/privacy policy; validate sample-image rights and the exact research evidence for displayed metrics.
 1. Capture current behavior in focused synthetic-data characterization tests and establish a runnable local baseline.
 2. In small slices, make the approved public demo reliable and clearly simulated; validate exports, labels, and image handling.
 3. Evaluate a free static host versus a hosted mock API with measured resource and privacy needs; perform owner-controlled release gates.

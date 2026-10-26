@@ -1,6 +1,6 @@
 # Architecture decision log
 
-Each entry states its status. A proposal is not authorization to implement or operate cloud services.
+Each entry states its status. Approval of a direction does not mean its implementation is complete or authorize account, billing, DNS, or production deployment actions.
 
 ## ADR-001 — Research showcase and data boundary
 
@@ -15,19 +15,19 @@ Each entry states its status. A proposal is not authorization to implement or op
 ## ADR-002 — Hosting and backend shape
 
 - Date: 2026-10-27
-- Status: **PROPOSED — awaiting owner review**
-- Context: The owner prefers free hosting. Vite can be hosted statically; large Python/PyTorch weights are a poor fit for current hosted request handling. No current persistent data requirement is approved.
+- Status: **APPROVED by owner, 2026-10-27 (D1–D6); implementation pending**
+- Context: The owner prefers free hosting. Vite can be hosted statically; large Python/PyTorch weights are a poor fit for current hosted request handling. No current persistent data requirement is approved. The [CX-002 decision package](CX002_DECISION_PACKAGE.md) records the source-backed D1–D6 choices the owner accepted.
 - Alternatives: (A) static public demo with labeled browser simulation; (B) Vercel frontend plus hosted mock Flask API; (C) move API and identity to Supabase; (D) full rewrite.
-- Proposed decision: Evaluate A against the existing demo contract first. Retain a separate local Python real-model path. Use B only if its hosted API adds demonstrable value. Defer Supabase Auth/Postgres/Storage until a persistent workflow is approved; Edge Functions are suitable only for short compatible tasks.
-- Consequences: Sample-image licensing, simulation parity, privacy, browser storage, free-plan eligibility and deployment behavior become acceptance gates. No backend host is selected.
+- Decision: The public page uses approved sample images only (D1) and does not automatically retain images in browser storage; deliberate export remains available (D2). Evaluate clearly labeled browser simulation first against the existing demo contract (D3); retain a separate local Python real-model path and use a hosted mock API only if it adds demonstrated value. Vercel Hobby is the first static-host candidate, conditional on personal non-commercial eligibility and preview validation, rather than a selected deployment (D4). Radiologist sign-in remains a future concept; preserve the existing screens for separate review without representing their development login as real access (D5). Label hosted findings simulated, use model names only with a tested mapping, and do not assert exact published metrics until linked to experiment and checkpoint evidence (D6). Defer Supabase Auth/Postgres/Storage until a persistent workflow is approved; Edge Functions are suitable only for short compatible tasks.
+- Consequences: Sample-image licensing, de-identification and metadata review; removal of the current public upload and automatic browser-retention behavior; simulation parity; free-plan eligibility; and deployment behavior are implementation or release gates. Exact UI metric-to-run/checkpoint mapping remains unverified and is a publication gate. No backend host or provider account is selected.
 - Supersedes: none; the README's Vercel path remains a configuration claim, not an approved deployment decision.
 
 ## ADR-003 — Incremental change and rule ownership
 
 - Date: 2026-10-27
-- Status: **PROPOSED — awaiting owner review**
+- Status: **APPROVED by owner, 2026-10-27 (D7); implementation pending**
 - Context: The Vue screens overlap, tests are absent, and inference/identity paths have unverified behavior.
 - Alternatives: full rewrite; incremental characterization and vertical slices.
-- Proposed decision: Retain working Vue and Python code. Characterize sample/demo, export, mode selection, and local inference before changing them. Put consequential validation and any future authorization at a verified server boundary; do not trust browser-supplied ownership. Use one authoritative owner per business rule.
+- Decision: Retain working Vue and Python code. Characterize sample/demo, export, mode selection, and local inference before changing them. Improve in small vertical slices. Put consequential validation and any future authorization at a verified server boundary; do not trust browser-supplied ownership. Use one authoritative owner per business rule.
 - Consequences: Early work is testing and contract discovery; simplification or retirement of a screen needs owner review and evidence.
 - Supersedes: none.

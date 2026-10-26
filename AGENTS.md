@@ -23,6 +23,7 @@ Separate observed behavior, inference, and proposal. Do not turn a proposal into
 - Work from the one `READY` task. Check its dependencies and acceptance evidence before changing its status. Keep changes small and reviewable; characterize existing behavior before migrating it. Validate at the owning boundary, then integration and release gates where applicable.
 - Use deterministic tools for routine checks. Match validation to the change; Markdown-only work does not require application suites. Record failures and unverified checks plainly in `SESSION.md`.
 - Inspect Git status before and after work. Preserve unrelated changes. Do not commit automatically. Do not delete or retire a feature without owner review.
+- Give every task an exact proposed commit message that includes its task ID. Include that message in the task completion report even when no commit is created.
 - Account creation, billing, DNS, production deployment, use of real data, destructive data actions, and final cutover are owner-operated gates. Prepare a reviewable plan and evidence first.
 
 Model routing and task format are in `AI_DEVELOPMENT_WORKFLOW.md` and `PROJECT_TASKS.md`.
