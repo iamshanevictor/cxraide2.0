@@ -24,6 +24,7 @@ function loadScript(file, globals = {}) {
 
 function demoHarness() {
   const saved = new Map();
+  const storageWrites = [];
   const downloads = [];
   const pdfExports = [];
   let objectNumber = 0;
@@ -45,7 +46,7 @@ function demoHarness() {
   };
   const localStorage = {
     getItem(key) { return saved.get(key) ?? null; },
-    setItem(key, value) { saved.set(key, value); },
+    setItem(key, value) { storageWrites.push([key, value]); saved.set(key, value); },
     removeItem(key) { saved.delete(key); },
   };
   const component = loadScript("src/views/DemoWorkspaceView.vue", {
@@ -54,6 +55,7 @@ function demoHarness() {
     html2pdf: () => ({ from(element) { this.element = element; return this; }, set(options) { this.options = options; return this; }, async save() { pdfExports.push({ element: this.element, options: this.options }); } }),
     useToast: () => ({ addToast() {} }),
     URL, document, localStorage, Blob, Date,
+    window: { addEventListener() {} },
     crypto: { randomUUID: () => "synthetic-box" },
   });
   const view = Object.assign(component.data(), component.methods);
@@ -64,17 +66,33 @@ function demoHarness() {
   Object.defineProperty(view, "sortedPredictions", {
     get() { return component.computed.sortedPredictions.call(view); },
   });
-  return { view, saved, downloads, urls, pdfExports };
+  return { component, view, saved, storageWrites, downloads, urls, pdfExports };
 }
 
-test("current loader automatically retains a synthetic file and clear removes it", async () => {
-  const { view, saved } = demoHarness();
-  view.fileToDataUrl = async () => "data:image/png;base64,c3ludGhldGlj";
-  await view.loadFile({ name: "synthetic.png" });
-  assert.equal(saved.get("cxraide_last_image"), "data:image/png;base64,c3ludGhldGlj");
-  assert.equal(saved.get("cxraide_last_image_name"), "synthetic.png");
-  view.clearImage();
+test("demo clears legacy image storage and keeps new images only in memory", () => {
+  const { component, view, saved, storageWrites } = demoHarness();
+  saved.set("cxraide_last_image", "data:image/png;base64,c3ludGhldGlj");
+  saved.set("cxraide_last_image_name", "old-synthetic.png");
+  saved.set("authToken", "synthetic-token");
+  component.mounted.call(view);
   assert.equal(saved.has("cxraide_last_image"), false);
+  assert.equal(saved.has("cxraide_last_image_name"), false);
+  assert.equal(saved.get("authToken"), "synthetic-token");
+  assert.equal(view.imageFile, null);
+
+  const file = { name: "synthetic.png" };
+  view.loadFile(file);
+  assert.equal(view.imageFile, file);
+  assert.equal(view.imageUrl.startsWith("blob:"), true);
+  assert.deepEqual(storageWrites, []);
+
+  const reopened = Object.assign(component.data(), component.methods);
+  component.mounted.call(reopened);
+  assert.equal(reopened.imageFile, null);
+  assert.equal(reopened.imageUrl, "");
+  view.clearImage();
+  assert.equal(view.imageFile, null);
+  assert.deepEqual(storageWrites, []);
 });
 
 test("manual boxes use display pixels and CSV exports only those boxes", async () => {

@@ -8,7 +8,7 @@ Status: assessed from the repository on 2026-10-27. **Observed** means present i
 Browser: Vue 3 / Vite SPA
   public landing, research, metrics, about, demo
   legacy login, home, annotate, upload routes
-  local drawing; CSV/PDF/PNG exports; localStorage token and demo image
+  local drawing; CSV/PDF/PNG exports; localStorage auth token
        | HTTP, VITE_API_BASE_URL
 Flask server/app.py
   /login, /check-session, /health, /admin/reset-password
@@ -25,13 +25,13 @@ The Flask model loader uses a process-local background thread, not a durable que
 
 Important source files: `client/src/router/index.js` (page map and browser guard); `client/src/views/DemoWorkspaceView.vue` (public sample, drawing, exports); `client/src/views/AnnotateView.vue` and `UploadCXRView.vue` (older protected workflows); `client/src/services/modelService.js` (image preparation and prediction HTTP contract); `server/app.py` (Flask application and development login); `server/model_service.py` (mock/real model loading and inference); `client/package.json`, `server/requirements*.txt`, `client/vite.config.js`, and `client/vercel.json` (build and deployment assumptions).
 
-Observed risks: development login accepts a username without verifying a password; browser route guard accepts an unsigned offline token; inference has no verified user boundary; browser demo saves the last image in localStorage; report construction inserts user fields into HTML; model-mode selection and mock-without-Torch behavior need tests. These are code findings, not a claim that a hosted instance was tested.
+Observed risks: development login accepts a username without verifying a password; browser route guard accepts an unsigned offline token; inference has no verified user boundary; the public demo still exposes visitor upload; report construction inserts user fields into HTML; model-mode selection and mock-without-Torch behavior have characterized defects. CX-004 removed automatic demo image retention and clears its legacy browser storage keys on mount. These are code findings, not a claim that a hosted instance was tested.
 
 The demo's current `Load sample` action constructs a synthetic 512×512 gradient/noise image in canvas (`DemoWorkspaceView.vue`), rather than loading a real sample chest X-ray. This differs from the owner's desired showcase and needs a source/permission decision before an asset is added.
 
 The source-backed public demo behavior, API boundary, coordinates, exports, simulation modes, and privacy findings are recorded in [the CX-001 demo contract](DEMO_CONTRACT.md). That note is discovery evidence, not an approved implementation design.
 
-No automated test suite, CI workflow, schema, or migrations were found. Python syntax parsing passed for the two server source files. Builds, lint, runtime inference, model accuracy, hosted operation, and provider accounts were not verified because dependencies and model files were absent and this bootstrap did not install them.
+CX-003 added focused Node/Python contract tests; CX-004 updated the demo retention test. No CI workflow, schema, or migrations were found. Python syntax parsing passed for the two server source files. Builds, lint, browser interaction, runtime inference, model accuracy, hosted operation, and provider accounts were not verified because application dependencies and model files were absent.
 
 ## Approved target direction, implementation pending
 

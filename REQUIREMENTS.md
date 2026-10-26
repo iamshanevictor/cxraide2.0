@@ -21,7 +21,7 @@ Status: owner-stated scope and D1–D7 approved 2026-10-27. Implemented behavior
 ## Exclusions and unresolved scope
 
 - No production patient record system, persistent radiologist accounts, clinical claims, or real-data migration is currently approved.
-- The existing public upload and automatic browser image retention are implementation gaps against D1/D2; they are not approved public-demo behavior. The protected legacy workspace and report wording still need review before being promoted as intended public-demo behavior.
+- The existing public upload remains an implementation gap against D1. CX-004 removed automatic browser image retention for D2; browser runtime behavior remains to be verified. The protected legacy workspace and report wording still need review before being promoted as intended public-demo behavior.
 
 Evidence: [current architecture](docs/architecture/ARCHITECTURE.md), [decision log](docs/architecture/DECISIONS.md), [active tasks](PROJECT_TASKS.md), and current [README](README.md). The README describes the earlier local development setup; this file records the newly clarified product scope.
 

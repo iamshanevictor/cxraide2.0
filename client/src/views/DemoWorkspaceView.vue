@@ -25,7 +25,7 @@
               <div class="drop-title">
                 <i class="bi bi-cloud-arrow-up" /> Drag & drop or click
               </div>
-              <div class="drop-sub text-muted">PNG/JPEG • last session restored automatically</div>
+              <div class="drop-sub text-muted">PNG/JPEG • images are not saved between visits</div>
               <input ref="fileInput" class="hidden" type="file" accept="image/*" @change="onFileInput" />
             </div>
 
@@ -289,7 +289,7 @@ export default {
     },
   },
   mounted() {
-    this.restoreLastImage();
+    this.clearLegacyImageStorage();
     window.addEventListener("keydown", this.onKeyDown);
   },
   beforeUnmount() {
@@ -330,9 +330,9 @@ export default {
       const file = e.dataTransfer?.files?.[0];
       if (file) this.loadFile(file);
     },
-    async loadFile(file) {
+    loadFile(file) {
       const { addToast } = useToast();
-      this.clearImage(false);
+      this.clearImage();
       this.imageFile = file;
       this.imageUrl = URL.createObjectURL(file);
       this.boxes = [];
@@ -340,18 +340,9 @@ export default {
       this.reportHtml = "";
       this.selectedBoxId = null;
 
-      // Persist last session image as dataURL
-      try {
-        const dataUrl = await this.fileToDataUrl(file);
-        localStorage.setItem("cxraide_last_image", dataUrl);
-        localStorage.setItem("cxraide_last_image_name", file.name);
-      } catch {
-        // ignore persistence errors
-      }
-
       addToast({ variant: "success", title: "Image loaded", message: file.name });
     },
-    clearImage(clearStorage = true) {
+    clearImage() {
       if (this.imageUrl?.startsWith("blob:")) {
         try {
           URL.revokeObjectURL(this.imageUrl);
@@ -366,20 +357,13 @@ export default {
       this.draftBox = null;
       this.selectedBoxId = null;
       this.reportHtml = "";
-      if (clearStorage) {
+    },
+    clearLegacyImageStorage() {
+      try {
         localStorage.removeItem("cxraide_last_image");
         localStorage.removeItem("cxraide_last_image_name");
-      }
-    },
-    async restoreLastImage() {
-      const dataUrl = localStorage.getItem("cxraide_last_image");
-      if (!dataUrl) return;
-      try {
-        const name = localStorage.getItem("cxraide_last_image_name") || "last-session.png";
-        const file = await this.dataUrlToFile(dataUrl, name);
-        await this.loadFile(file);
       } catch {
-        // ignore
+        // Browser storage may be disabled; the demo still works in memory.
       }
     },
     async loadSyntheticSample() {
@@ -705,14 +689,6 @@ export default {
       if (e.key === "Delete" && this.selectedBoxId) this.deleteBox(this.selectedBoxId);
     },
 
-    fileToDataUrl(file) {
-      return new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(r.result);
-        r.onerror = () => reject(new Error("Failed to read file"));
-        r.readAsDataURL(file);
-      });
-    },
     async dataUrlToFile(dataUrl, name) {
       const res = await fetch(dataUrl);
       const blob = await res.blob();
