@@ -209,13 +209,28 @@ import UiButton from "@/ui/UiButton.vue";
 import UiBadge from "@/ui/UiBadge.vue";
 import UiSkeleton from "@/ui/UiSkeleton.vue";
 import DemoSimulation from "@/services/demoSimulation";
-import ModelService from "@/services/modelService";
 import demoSampleUrl from "@/assets/cxraide-demo-sample.png";
 import html2pdf from "html2pdf.js";
 import { useToast } from "@/ui/useToast";
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
+}
+
+function getDemoBoxColor(type) {
+  const colors = {
+    cardiomegaly: "#ef4444",
+    "pleural thickening": "#8b5cf6",
+    "pulmonary fibrosis": "#ec4899",
+    "pleural effusion": "#22c55e",
+    "nodule/mass": "#3b82f6",
+    infiltration: "#f59e0b",
+    consolidation: "#0ea5e9",
+    atelectasis: "#f97316",
+    pneumothorax: "#a855f7",
+  };
+
+  return colors[type?.toLowerCase()] || "#3b82f6";
 }
 
 export default {
@@ -285,7 +300,7 @@ export default {
   },
   methods: {
     colorFor(label) {
-      return ModelService.getBoxColor(label);
+      return getDemoBoxColor(label);
     },
     triggerFile() {
       this.$refs.fileInput?.click?.();
