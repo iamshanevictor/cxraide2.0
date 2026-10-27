@@ -17,25 +17,26 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 
 ## Quick Queue
 
-**CX-006 is the sole `READY` task.** It addresses the verified absence of an approved chest X-ray sample without adding an unvetted image. Status and dependency evidence govern promotion; table order alone does not.
+There is currently no `READY` task. CX-006 documented candidate source terms and remains subject to owner review before any image is added. Status and dependency evidence govern promotion; table order alone does not.
 
 | ID | Status | Priority | Route | Executor | Task | Depends on | Validation gate |
 |---|---|---|---|---|---|---|---|
-| CX-001 | DONE locally | P0 | Luna · Low; Sol · Medium only for unresolved privacy/architecture judgment | Codex | Verify public demo contract and privacy paths | None | Source-backed contract table and updated handoff complete |
-| CX-002 | DONE | P0 | GPT-6.1 Sol · Medium | Owner + Codex documentation | Confirm demo, sample, sign-in, and hosting decisions | CX-001 evidence | D1–D7 approved; ADRs and requirements updated |
-| CX-003 | DONE locally | P1 | GPT-6.1 Sol · Low; Medium for cross-layer inference | Codex | Characterize approved demo and inference behavior | CX-001 and CX-002 | 5 Node and 5 Python contract tests passed |
-| CX-004 | DONE locally | P1 | GPT-6.1 Sol · Low | Codex | Stop automatic public-demo image retention | CX-003 | 5 focused client tests passed; browser run pending |
-| CX-005 | DONE locally | P1 | GPT-6.1 Sol · Low | Codex | Restrict public demo UI to sample input | CX-001/003 and D1 approval | 7 focused client tests passed; browser run pending |
-| **CX-006** | **READY** | P1 | GPT-6.1 Sol · Medium for provenance/rights review | Codex + owner approval | Vet a chest X-ray sample candidate | D1 approval and CX-005 | Source, license, de-identification, metadata and use gate documented |
+| CX-001 | DONE locally | P0 | GPT-6 Luna · Low; GPT-6 Sol · Low for privacy judgment | Codex | Verify public demo contract and privacy paths | None | Source-backed contract table and updated handoff complete |
+| CX-002 | DONE | P0 | GPT-6 Sol · Medium for architecture decisions | Owner + Codex documentation | Confirm demo, sample, sign-in, and hosting decisions | CX-001 evidence | D1–D7 approved; ADRs and requirements updated |
+| CX-003 | DONE locally | P1 | GPT-6 Luna · Low; GPT-6 Sol · Low for cross-layer interpretation | Codex | Characterize approved demo and inference behavior | CX-001 and CX-002 | 5 Node and 5 Python contract tests passed |
+| CX-004 | DONE locally | P1 | GPT-6 Luna · Low | Codex | Stop automatic public-demo image retention | CX-003 | 5 focused client tests passed; browser run pending |
+| CX-005 | DONE locally | P1 | GPT-6 Luna · Low | Codex | Restrict public demo UI to sample input | CX-001/003 and D1 approval | 7 focused client tests passed; browser run pending |
+| **CX-006** | **DONE locally** | P1 | GPT-6 Luna · Low for extraction; GPT-6 Sol · Low for rights/privacy review, Medium only if evidence conflicts | Codex + owner approval | Vet a chest X-ray sample candidate | D1 approval and CX-005 | Candidate source terms documented; exact image and rights/privacy approval remain owner gates |
+| CX-007 | DONE locally | P2 | GPT-6 Luna · Low for documentation; GPT-6 Sol · Low for routing judgment | Codex | Update model and effort routing | Owner preference | Workflow, queue and handoff aligned; `git diff --check` passed |
 
 ## How to Use This File
 
 1. Read `AGENTS.md`, `SESSION.md`, Git status, and the selected `READY` task if one exists; then inspect only directly relevant sources/tests.
-2. Follow the task's bounded scope and route; check model availability when beginning a task.
+2. Follow the task's bounded scope and route; default to GPT-6 Luna · Low for edits/coding and use GPT-6 Sol · Low or Medium for consequential architecture/security/data judgment. Check model availability when beginning a task.
 3. Record observations separately from inferences. Complete task-specific validation and note checks that could not run.
 4. Record local completion evidence and update `SESSION.md`. Promote a dependent task only when each prerequisite's required evidence exists. Keep hosted and owner acceptance separate.
 5. Update an ADR for a consequential decision. Archive lengthy completed details if the live queue becomes hard to scan. Do not invent tasks when the queue is exhausted.
-6. Give every task an exact Conventional Commit title with an optional code-area scope and a `Refs:` footer for its task ID. Repeat it in the completion report. This names a reviewable change; it does not create a Git commit automatically. The recorded CX-003 title predates this scope preference and matches the existing commit.
+6. Give every task a concise Conventional Commit title with an optional short, single-word code-area scope. Keep task IDs in this queue, not in commit messages or footers. Repeat the title in the completion report. This names a reviewable change; it does not create a Git commit automatically. Recorded historical titles remain unchanged.
 
 ## Status Legend
 
@@ -60,9 +61,9 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 - **Acceptance criteria:** A short contract table covers sample origin, each simulation path, manual-box coordinate meaning, CSV/PDF outputs, upload handling, browser persistence, and research-only labels. Distinguish observed facts from assumptions. Identify any current path that could retain or send an identifiable image.
 - **Required tests and manual validation:** Source review and targeted static checks; no app test suite required. If a safe local run is already available without installing anything, record observations separately; it is not required for completion.
 - **Expected deliverables:** Contract evidence added to `docs/architecture/ARCHITECTURE.md` or a linked concise note; updated `SESSION.md`; proposed follow-up only for verified gaps.
-- **Recommended model:** Luna · Low for bounded extraction; GPT-6.1 Sol · Medium if privacy/architecture conflicts require judgment.
+- **Recommended model and effort for a rerun:** GPT-6 Luna · Low for bounded extraction; GPT-6 Sol · Low for privacy judgment, Medium only if evidence conflicts.
 - **Implementation prompt:** Map only the current public demo's sample, prediction, annotation, export, upload, and retention paths. Produce source-backed contract evidence, update the architecture note and session handoff, and record unverified behavior. Do not implement or install anything.
-- **Commit message:** `docs(architecture): map public demo contract and privacy paths` with footer `Refs: CX-001`.
+- **Commit title:** `docs(arch): map demo contract`.
 - **Completion evidence (2026-10-27):** [Demo contract](docs/architecture/DEMO_CONTRACT.md) covers required paths with source links, observed/inferred/unknown labels, and decision inputs. Targeted source reads completed. Document links, whitespace, and `git diff --check` passed. Browser/API runtime, PDF/CSV output, and hosted behavior were not exercised because dependencies and model weights were absent. No application code, install, deployment, or commit was performed for CX-001. Owner acceptance is separate.
 
 ## CX-002 — Confirm product and hosting decisions
@@ -75,9 +76,9 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 - **Acceptance criteria:** Owner explicitly accepts or revises each scope decision; ADR statuses and `REQUIREMENTS.md` reflect the answer; provider eligibility and actual free-plan fit are rechecked at selection.
 - **Required tests and manual validation:** Consistency review across requirements, ADRs and architecture; no application tests.
 - **Expected deliverables:** Dated ADR update, revised scope, hosting choice or a clearly stated remaining decision.
-- **Recommended model:** GPT-6.1 Sol · Medium.
+- **Recommended model and effort for a rerun:** GPT-6 Sol · Medium for the multi-decision architecture review; Luna · Low for mechanical documentation edits.
 - **Implementation prompt:** After CX-001, present the verified public-demo choices and hosting tradeoffs to the owner. Record explicit answers in the ADRs and requirements. Do not treat a proposal or silence as approval.
-- **Commit message:** `docs(architecture): record public demo and hosting decisions` with footer `Refs: CX-002`.
+- **Commit title:** `docs(arch): record demo hosting decisions`.
 - **Completion evidence (2026-10-27):** CX-001 prerequisite met. The [CX-002 decision package](docs/architecture/CX002_DECISION_PACKAGE.md) covers D1–D7 with options, tradeoffs, source evidence, and verified provider terms. The owner explicitly approved D1–D7; [ADR-002/003](docs/architecture/DECISIONS.md) and `REQUIREMENTS.md` record the accepted direction. The separate training repository URL is recorded; exact UI metric-to-run mapping remains unverified and gates metric publication. Sample rights, host eligibility and preview are later gates. Documentation consistency and `git diff --check` passed. No application, cloud or account action was performed.
 
 ## CX-003 — Characterize existing demo and inference behavior
@@ -90,7 +91,7 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 - **Acceptance criteria:** Tests distinguish simulated and real paths, preserve useful manual-box/export behavior, and demonstrate any verified mode-selection or mock fallback defects without asserting clinical accuracy.
 - **Required tests and manual validation:** Run only the added focused tests and existing relevant lint/build when dependencies are available; review representative synthetic CSV/PDF output and record unrun gates.
 - **Expected deliverables:** Focused characterization tests, test commands/results, and updated `SESSION.md`.
-- **Recommended model:** GPT-6.1 Sol · Low for scoped tests; Medium for cross-layer inference interpretation.
+- **Recommended model and effort for a rerun:** GPT-6 Luna · Low for scoped tests; GPT-6 Sol · Low for cross-layer interpretation, Medium only if the evidence conflicts.
 - **Implementation prompt:** Once CX-001 is validated and CX-002 decisions are approved, write focused characterization tests for the approved demo and current mock/real API behavior with synthetic fixtures. Report exact test evidence and limits before proposing repairs.
 - **Recorded commit title:** `test(cx-003): characterize public demo and inference contract` (created before the code-area scope preference).
 - **Completion evidence (2026-10-27):** Added [client contract tests](client/tests/demo-contract.test.cjs) and [server route contract tests](server/tests/test_prediction_contract.py), using synthetic data and only Node/Python standard libraries. `node --test client/tests/demo-contract.test.cjs` passed 5/5; `python -m unittest discover -s server/tests -p 'test_*.py' -v` passed 5/5. Client tests captured current automatic image retention, display-pixel manual boxes and quoted CSV (excluding AI boxes), research-only HTML and PDF-export invocation, selected model field, dropped response provenance, exact-PyTorch-error fallback, and network-error propagation. Server tests captured no-Torch rejection, both UI model values entering the combined branch, exact `it2` predictions being overwritten by a combined result, mock/real object status labeling, and an inconsistent explanation when a mock object exists but the environment flag says real. A representative synthetic CSV string and report HTML were asserted; the PDF library was stubbed, so PDF bytes/rendering were not verified. Flask/Pillow/Torch integration, real weights, browser UI, hosted behavior, `npm` build/lint, and real PDF output remain unverified because application dependencies and model files are absent. `git diff --check` passed; no app implementation, dependency, config, cloud, or account change was made.
@@ -105,7 +106,7 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 - **Acceptance criteria:** Loading an image does not write its bytes or filename to browser storage; reopening the demo does not restore a prior image; explicit CSV/PDF export and in-session boxes still work. Clean up legacy `cxraide_last_image` keys during this change so existing local copies are not restored later.
 - **Validation:** Update and run focused Node contract tests with synthetic files; run existing client lint/build only if dependencies are present; record browser verification limits.
 - **Deliverables:** Small view change, revised contract tests, `SESSION.md` evidence.
-- **Commit message:** `fix(demo): stop automatic image retention` with footer `Refs: CX-004`.
+- **Recorded commit title:** `fix(demo): stop automatic image retention`.
 - **Completion evidence (2026-10-27):** `DemoWorkspaceView.vue` no longer reads files into data URLs for storage or restores a prior image. On mount, it removes `cxraide_last_image` and `cxraide_last_image_name` in a guarded cleanup. The public hint now says images are not saved between visits. Updated synthetic contract test checks legacy cleanup, zero storage writes, an in-memory loaded file, and a fresh view with no restored image. Existing drawing/CSV and report/PDF-invocation contract tests still pass. `node --test client/tests/demo-contract.test.cjs` passed 5/5. Browser interaction, actual PDF rendering, and client lint/build remain unverified because `client/node_modules` is absent. No dependency, account, cloud or deployment action was performed.
 
 ## CX-005 — Restrict public demo UI to sample input
@@ -118,21 +119,35 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 - **Acceptance criteria:** Public demo exposes no picker/drop upload action; its existing synthetic sample still supports annotation, prediction request, CSV and report generation. The page clearly calls that interim image synthetic until a sourced radiograph is approved.
 - **Validation:** Update and run focused synthetic client tests; run lint/build if dependencies become available; record browser limits and the remaining sample-provenance gate.
 - **Deliverables:** Small UI/test change and `SESSION.md` evidence.
-- **Commit message:** `fix(demo): restrict public image input to samples` with footer `Refs: CX-005`.
+- **Recorded commit title:** `fix(demo): restrict public image input to samples`.
 - **Completion evidence (2026-10-27):** Removed public file picker, drop area, and upload invitation from `DemoWorkspaceView.vue`. The public action and empty state explicitly say the current image is synthetic. Internal loader/old upload handlers remain for later reviewed modes. Updated tests assert the template has no file input or drop handler and exercise synthetic sample loading through annotation, prediction request, and report generation. Existing CSV/PDF-invocation and retention tests still pass. `node --test client/tests/demo-contract.test.cjs` passed 7/7; `git diff --check` passed. The endpoint still accepts direct uploads if exposed, so this is a UI restriction only. Browser interaction, client lint/build, actual PDF and hosted behavior were not verified because `client/node_modules` is absent. No dependencies, cloud, accounts, or deployment changed.
 
 ## CX-006 — Vet a chest X-ray sample candidate
 
 - **Objective and bounded scope:** Find one or two candidate public chest X-ray images to replace the synthetic illustration after evidence review. Document source, rights for redistribution in a public demo, de-identification basis, embedded metadata handling, and suitability for annotation.
-- **Priority / status:** P1 / **READY**. **Executor:** Codex prepares evidence; owner approves the selected asset.
+- **Priority / status:** P1 / **DONE locally**. **Executor:** Codex prepares evidence; owner approves any selected asset.
+- **Model and effort:** GPT-6 Luna · Low for candidate/source extraction; GPT-6 Sol · Low for rights and privacy review. Use Sol · Medium only if evidence conflicts and record why.
 - **Dependencies:** D1 approved and CX-005 public UI restriction complete.
 - **Inspect first:** `REQUIREMENTS.md`, ADR-002, `docs/architecture/DEMO_CONTRACT.md`, and the current sample loader. Consult primary dataset/license sources rather than copying an image from a search result.
 - **Implementation boundary:** Research and decision package only. No asset addition, data upload, production deployment, or clinical claim until rights and privacy evidence are reviewed.
 - **Acceptance criteria:** Candidate table with direct source/license links, allowed use and attribution terms, known de-identification and metadata facts, and an explicit unknown/owner gate. Identify whether the candidate is suitable as a public downloadable asset; do not infer permission from accessibility.
 - **Validation:** Verify current source/license pages and inspect any provided candidate file metadata with deterministic tools if available; record unavailable checks. Owner selection is separate from local research completion.
-- **Deliverables:** Short sample-provenance note, updated task status and `SESSION.md`.
-- **Commit message:** `docs(demo): vet chest x-ray sample provenance` with footer `Refs: CX-006`.
-- **Completion evidence:** Pending.
+- **Deliverables:** [Sample-provenance note](docs/architecture/SAMPLE_PROVENANCE.md), updated task status and `SESSION.md`.
+- **Commit title:** `docs(demo): vet sample provenance`.
+- **Completion evidence (2026-10-27):** Reviewed the primary Stanford CheXpert page and PadChest research-use agreement, NIH's original download portal and dataset paper, and PhysioNet's MIMIC-CXR terms. The [sample-provenance note](docs/architecture/SAMPLE_PROVENANCE.md) records candidate terms, privacy facts, unknowns, and owner gates. NIH remains conditional because the official portal terms could not be verified; CheXpert redistribution terms remain unknown; PadChest requires prior written permission; MIMIC-CXR terms prohibit sharing. No image was supplied or downloaded, so file-level metadata, overlays, and pixel inspection remain unverified. No asset was added. Local research is complete; owner review is required before selecting or adding an image. Commit title: `docs(demo): vet sample provenance`.
+
+## CX-007 — Update model and effort routing
+
+- **Objective and bounded scope:** Make GPT-6 Luna the default for most coding and edits, reserve GPT-6 Sol for architecture/security/data judgment, and specify Low/Medium effort criteria.
+- **Priority / status:** P2 / **DONE locally**. **Executor:** Codex.
+- **Dependencies:** Owner's explicit routing preference.
+- **Inspect first:** `AGENTS.md`, `AI_DEVELOPMENT_WORKFLOW.md`, `PROJECT_TASKS.md`, `SESSION.md`, and current model availability.
+- **Implementation boundary:** Workflow documentation only; no application, account, or model-setting change to the active chat.
+- **Acceptance criteria:** Luna · Low is the default; Sol · Low/Medium covers consequential analysis; High and Astra are not routine; the active task records its intended route and effort.
+- **Validation:** Check current official OpenAI Docs and Codex model availability; review routing consistency and run `git diff --check`. No application tests needed.
+- **Deliverables:** Updated agent/workflow instructions, task routes, and session handoff.
+- **Commit title:** `docs(ai): prefer Luna for scoped work`.
+- **Completion evidence (2026-10-27):** Official [model-selection guidance](https://developers.openai.com/api/docs/guides/model-selection) and [GPT-6 family guidance](https://developers.openai.com/api/docs/guides/latest-model) were reviewed. The current Codex model list includes `gpt-6-luna` and `gpt-6-sol` with Low/Medium effort. Routing was updated in `AGENTS.md`, `AI_DEVELOPMENT_WORKFLOW.md`, this queue, and `SESSION.md`. `git diff --check` passed. Editing documentation did not change the model running this chat; no application tests were needed.
 
 ## Queue rule
 
