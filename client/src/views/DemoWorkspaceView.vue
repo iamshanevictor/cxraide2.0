@@ -12,13 +12,14 @@
 
       <div class="grid">
         <!-- Left: sample + controls -->
-        <UiCard title="Image" subtitle="Use the synthetic sample" class="panel">
+        <UiCard title="Image" subtitle="Use the public research sample" class="panel">
           <div class="stack">
-            <div class="hint text-muted">The current sample is a synthetic illustration, not a chest X-ray. Images are not saved between visits.</div>
+            <div class="hint text-muted">Project training/validation sample for annotation practice. Preset results are simulated and do not analyze this image. Your session changes are not saved between visits.</div>
+            <div class="hint text-muted">Dataset sources: <a href="https://www.kaggle.com/datasets/huthayfahodeb/nih-chest-x-rays-bbox-version" target="_blank" rel="noopener noreferrer">NIH Chest X-rays Bbox</a> and <a href="https://www.kaggle.com/c/vinbigdata-chest-xray-abnormalities-detection" target="_blank" rel="noopener noreferrer">VinBigData</a>. NIH data provider: NIH Clinical Center. See the <a href="https://nihcc.app.box.com/v/ChestXray-NIHCC" target="_blank" rel="noopener noreferrer">NIH source</a> and <a href="https://openaccess.thecvf.com/content_cvpr_2017/papers/Wang_ChestX-ray8_Hospital-Scale_Chest_CVPR_2017_paper.pdf" target="_blank" rel="noopener noreferrer">Wang et al., CVPR 2017</a>.</div>
 
             <div class="row">
-              <UiButton variant="secondary" icon="bi bi-image" :disabled="isPredicting" @click="loadSyntheticSample">
-                Load synthetic sample
+              <UiButton variant="secondary" icon="bi bi-image" :disabled="isPredicting" @click="loadDemoSample">
+                Load chest X-ray sample
               </UiButton>
               <UiButton variant="ghost" icon="bi bi-trash" :disabled="!imageUrl || isPredicting" @click="clearImage">
                 Clear
@@ -37,7 +38,7 @@
 
             <div class="field">
               <label>Result source</label>
-              <div class="hint text-muted">Preset browser simulation. It does not analyze the illustration.</div>
+              <div class="hint text-muted">Preset browser simulation. It does not analyze the image.</div>
             </div>
 
             <div class="row">
@@ -74,12 +75,12 @@
         </UiCard>
 
         <!-- Center: viewer + canvas overlays -->
-        <UiCard title="Viewer" subtitle="Draw boxes on the synthetic illustration" class="viewer">
+        <UiCard title="Viewer" subtitle="Draw boxes on the public research sample" class="viewer">
           <div class="viewer-inner">
             <div v-if="!imageUrl" class="empty">
               <i class="bi bi-image" />
               <div class="empty-title">No image loaded</div>
-              <div class="text-muted">Load the synthetic sample to start</div>
+              <div class="text-muted">Load the chest X-ray sample to start</div>
             </div>
 
             <div
@@ -91,7 +92,8 @@
               @pointerup="onPointerUp"
               @pointerleave="onPointerLeave"
             >
-              <img ref="img" :src="imageUrl" class="img" alt="Synthetic demo illustration" @load="syncImageMetrics" />
+              <img ref="img" :src="imageUrl" class="img" alt="Public chest X-ray sample for annotation demonstration" @load="syncImageMetrics" />
+              <div class="demo-watermark" aria-label="Research demo. Simulated results. Not for diagnosis.">RESEARCH DEMO · SIMULATED RESULTS · NOT FOR DIAGNOSIS</div>
 
               <!-- Expert boxes -->
               <template v-if="showExpert">
@@ -208,6 +210,7 @@ import UiBadge from "@/ui/UiBadge.vue";
 import UiSkeleton from "@/ui/UiSkeleton.vue";
 import DemoSimulation from "@/services/demoSimulation";
 import ModelService from "@/services/modelService";
+import demoSampleUrl from "@/assets/cxraide-demo-sample.png";
 import html2pdf from "html2pdf.js";
 import { useToast } from "@/ui/useToast";
 
@@ -341,34 +344,14 @@ export default {
         // Browser storage may be disabled; the demo still works in memory.
       }
     },
-    async loadSyntheticSample() {
+    async loadDemoSample() {
       const { addToast } = useToast();
-      const canvas = document.createElement("canvas");
-      canvas.width = 512;
-      canvas.height = 512;
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#0b1220";
-      ctx.fillRect(0, 0, 512, 512);
-
-      // Simple synthetic "CXR-like" gradient/noise
-      const g = ctx.createRadialGradient(256, 240, 60, 256, 260, 260);
-      g.addColorStop(0, "rgba(255,255,255,0.75)");
-      g.addColorStop(1, "rgba(255,255,255,0.02)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, 512, 512);
-
-      for (let i = 0; i < 2500; i++) {
-        const x = Math.random() * 512;
-        const y = Math.random() * 512;
-        const a = Math.random() * 0.12;
-        ctx.fillStyle = `rgba(255,255,255,${a})`;
-        ctx.fillRect(x, y, 1, 1);
-      }
-
-      const dataUrl = canvas.toDataURL("image/png");
-      const file = await this.dataUrlToFile(dataUrl, `sample_${Date.now()}.png`);
+      const response = await fetch(demoSampleUrl);
+      if (!response.ok) throw new Error("Could not load the demo sample image.");
+      const blob = await response.blob();
+      const file = new File([blob], "cxraide-demo-sample.png", { type: "image/png" });
       await this.loadFile(file);
-      addToast({ variant: "info", title: "Sample loaded", message: "Synthetic sample image" });
+      addToast({ variant: "info", title: "Sample loaded", message: "Public research image; simulated results only" });
     },
 
     syncImageMetrics() {
@@ -519,7 +502,7 @@ export default {
     },
 
     aiStyle(pred) {
-      // Demo scenario boxes use the fixed 512x512 illustration coordinates.
+      // Demo scenario boxes use the fixed 512x512 reference coordinate space.
       const w = this.imageMetrics.displayW || this.$refs.img?.clientWidth || 1;
       const h = this.imageMetrics.displayH || this.$refs.img?.clientHeight || 1;
       const sx = w / 512;
@@ -614,7 +597,8 @@ export default {
           <div style="display:grid; grid-template-columns: 1fr; gap:10px;">
             <div>
               <div style="font-weight:800; margin-bottom:4px;">Demo scenario</div>
-              <div style="color: var(--text-2);">Synthetic illustration for interface demonstration; no image analysis is performed.</div>
+              <div style="color: var(--text-2);">Public research sample for annotation demonstration. Preset results are simulated and are not based on image analysis.</div>
+              <div style="color: var(--muted); font-size:12px; margin-top:5px;">Project training/validation sources: <a href="https://www.kaggle.com/datasets/huthayfahodeb/nih-chest-x-rays-bbox-version" target="_blank" rel="noopener noreferrer">NIH Chest X-rays Bbox</a> · <a href="https://www.kaggle.com/c/vinbigdata-chest-xray-abnormalities-detection" target="_blank" rel="noopener noreferrer">VinBigData</a>. NIH Clinical Center provided the NIH data; see the <a href="https://nihcc.app.box.com/v/ChestXray-NIHCC" target="_blank" rel="noopener noreferrer">NIH source</a> and <a href="https://openaccess.thecvf.com/content_cvpr_2017/papers/Wang_ChestX-ray8_Hospital-Scale_Chest_CVPR_2017_paper.pdf" target="_blank" rel="noopener noreferrer">Wang et al., CVPR 2017</a>.</div>
             </div>
             <div>
               <div style="font-weight:800; margin-bottom:4px;">Findings</div>
@@ -805,6 +789,23 @@ export default {
 }
 
 .img { display: block; width: 100%; height: auto; user-select: none; }
+
+.demo-watermark {
+  position: absolute;
+  inset: 45% 4% auto;
+  transform: rotate(-18deg);
+  color: rgba(255,255,255,0.62);
+  background: rgba(15,23,42,0.22);
+  border-block: 2px solid rgba(255,255,255,0.28);
+  padding: 7px 4px;
+  text-align: center;
+  font-size: clamp(11px, 2.2vw, 22px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  pointer-events: none;
+  z-index: 2;
+}
 
 .box {
   position: absolute;

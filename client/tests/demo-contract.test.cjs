@@ -68,6 +68,14 @@ function demoHarness() {
         return simulationResults.createDemoPredictions();
       },
     },
+    demoSampleUrl: "/assets/cxraide-demo-sample.png",
+    fetch: async (url) => ({
+      ok: true,
+      async blob() { return new Blob([url], { type: "image/png" }); },
+    }),
+    File: class TestFile extends Blob {
+      constructor(parts, name, options) { super(parts, options); this.name = name; }
+    },
     ModelService: {
       getBoxColor: () => "#123456",
       async predict(file, options) {
@@ -92,13 +100,16 @@ function demoHarness() {
   return { component, view, saved, storageWrites, downloads, urls, pdfExports, predictionRequests, simulationResults, get simulationCalls() { return simulationCalls; } };
 }
 
-test("public demo exposes only a clearly labeled synthetic sample action", () => {
+test("public demo exposes the research sample with visible simulation and diagnosis warnings", () => {
   const source = fs.readFileSync(path.join(root, "src/views/DemoWorkspaceView.vue"), "utf8");
   const template = source.match(/<template>([\s\S]*?)<\/template>/)?.[1];
   assert.ok(template);
-  assert.match(template, /Load synthetic sample/);
-  assert.match(template, /synthetic illustration, not a chest X-ray/);
+  assert.match(template, /Load chest X-ray sample/);
+  assert.match(template, /does not analyze the image/);
+  assert.match(template, /RESEARCH DEMO · SIMULATED RESULTS · NOT FOR DIAGNOSIS/);
   assert.match(source, /Preset findings demonstrate the interface only/);
+  assert.match(source, /NIH Chest X-rays Bbox/);
+  assert.match(source, /VinBigData/);
   assert.match(source, /Show simulated findings/);
   assert.doesNotMatch(template, /type="file"|@drop|@dragover|@click="triggerFile"/);
   assert.doesNotMatch(template, /CXR-IT2|CXR-IT3|AI model|confidence scores/);
@@ -113,7 +124,7 @@ test("demo simulation fixture is repeatable, private, and uses valid 512px boxes
   assert.deepEqual(first, second);
   assert.notStrictEqual(first.predictions, second.predictions);
   assert.equal(first.source, "browser-simulation");
-  assert.equal(first.scenario, "synthetic-illustration");
+  assert.equal(first.scenario, "public-cxr-sample");
   assert.equal(first.predictions.length, 2);
   for (const prediction of first.predictions) {
     assert.equal(prediction.source, "browser-simulation");
@@ -124,12 +135,12 @@ test("demo simulation fixture is repeatable, private, and uses valid 512px boxes
   }
 });
 
-test("synthetic sample still enters annotation and repeatable browser simulation without API calls", async () => {
+test("public sample still enters annotation and repeatable browser simulation without API calls", async () => {
   const harness = demoHarness();
   const { view, predictionRequests, simulationResults } = harness;
   view.dataUrlToFile = async (_, name) => ({ name, type: "image/png" });
-  await view.loadSyntheticSample();
-  assert.match(view.imageFile.name, /^sample_\d+\.png$/);
+  await view.loadDemoSample();
+  assert.equal(view.imageFile.name, "cxraide-demo-sample.png");
   assert.equal(view.imageUrl.startsWith("blob:"), true);
 
   view.onPointerDown({ clientX: 30, clientY: 40, pointerId: 1, target: {}, currentTarget: {} });

@@ -6,7 +6,7 @@ const presetFindings = Object.freeze([
 function createDemoPredictions() {
   return {
     source: "browser-simulation",
-    scenario: "synthetic-illustration",
+    scenario: "public-cxr-sample",
     predictions: presetFindings.map((finding) => ({
       class: finding.class,
       box: [...finding.box],
