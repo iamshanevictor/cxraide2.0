@@ -4,6 +4,14 @@ Reviewed: 2026-10-27 (source terms refreshed for CX-012). This is a source revie
 
 ## Candidate assessment
 
+### Owner-provided attachment (CX-012)
+
+- **Observed file:** One 474×474, 8-bit RGB PNG was supplied in the chat attachment. The PNG contains only IHDR, IDAT, and IEND chunks; no ancillary text/metadata chunks were present. It remains in the temporary attachment location and was not copied into the repository.
+- **Visible content:** A chest radiograph with visible `PORTABLE`, `AP`, and `L` markers. No obvious name or date overlay is visible in the supplied rendering. This visual check cannot establish that the image is de-identified or non-identifiable; it is still patient imaging data.
+- **Provenance and rights:** The attachment includes no source, image identifier, license/redistribution terms, or written permission. The owner’s act of attaching it does not establish the right to publish it.
+- **Assessment:** **Not cleared for public use.** Do not add or host this file unless its source and public redistribution permission are documented and the owner confirms the exact image is suitable for publication. No DICOM-origin or embedded source metadata can be inferred from this PNG alone.
+- **Limits:** This was a metadata and visible-content screening, not a clinical interpretation or legal determination. No image was altered, added, or uploaded elsewhere.
+
 | Source | Observed source terms and provenance | De-identification and metadata | Assessment |
 |---|---|---|---|
 | [NIH ChestX-ray14](https://nihcc.app.box.com/v/ChestXray-NIHCC) | NIH's download portal is the primary source. The [dataset paper](https://openaccess.thecvf.com/content_cvpr_2017/papers/Wang_ChestX-ray8_Hospital-Scale_Chest_CVPR_2017_paper.pdf) describes images from the NIH Clinical Center. Secondary publications describe public/CC0 availability, but the official portal terms could not be retrieved in this review. | No source file was available for file-level metadata, burned-in text, or image inspection. A dataset-level public or de-identification claim cannot prove that a particular file has no identifying content. | **Conditional first candidate; not cleared.** Proceed only after the owner verifies the original NIH redistribution terms and selects a specific image. Record attribution and inspect the original and all metadata before adding it. |
@@ -24,4 +32,4 @@ Reviewed: 2026-10-27 (source terms refreshed for CX-012). This is a source revie
 
 ## Limits of this review
 
-No candidate image was provided or downloaded, so pixel-level visual review, metadata inspection, embedded-text screening, and checksum recording were not possible. The repository's `client/public` and `client/src/assets` folders contain no chest X-ray candidate. The NIH Box portal did not expose its terms to the browsing tool; secondary license descriptions were not treated as permission. The refreshed CheXpert access page did not establish redistribution rights. This is a technical provenance review, not a legal determination. CX-012 remains waiting for the owner to supply one exact image (or direct source URL and identifier) and its applicable public redistribution terms or written permission.
+The owner supplied a candidate rendering, so a limited visual/PNG-container check was possible. The original source file, source identifier, license, permission, and de-identification evidence were not supplied; no original DICOM or metadata beyond the attached PNG can be checked. The candidate remains outside the repository, and `client/public` and `client/src/assets` still contain no chest X-ray. The NIH Box portal did not expose its terms to the browsing tool; secondary license descriptions were not treated as permission. The refreshed CheXpert access page did not establish redistribution rights. This is a technical provenance review, not a legal determination. CX-012 remains waiting for the exact source/identifier and applicable public redistribution terms or written permission; CX-013 must not add or host this candidate until clearance and exact-image approval.
