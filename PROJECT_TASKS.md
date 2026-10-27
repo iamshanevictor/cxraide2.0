@@ -8,16 +8,16 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 
 ## Current State
 
-- CX-001 discovery, CX-003 characterization, and CX-004 image-retention change are complete locally. The Flask application was not changed.
+- CX-001 discovery, CX-003 characterization, CX-004 image-retention change, and CX-005 public-input change are complete locally. The Flask application was not changed.
 - There is no active database, durable job system, or authoritative legacy data. Focused dependency-free contract tests now cover the demo and route boundaries.
-- The current demo's `Load sample` action generates a synthetic gradient/noise image rather than a sample chest X-ray. The demo still exposes visitor upload, pending approved sample provenance and D1 implementation. CX-004 stopped automatic browser image retention and clears the two legacy keys on mount.
+- The demo's `Load synthetic sample` action generates a gradient/noise illustration rather than a chest X-ray. CX-005 removed public picker/drop controls; internal upload handlers and the unauthenticated prediction API still accept images if invoked directly. CX-004 stopped automatic browser image retention and clears the two legacy keys on mount.
 - Hosted results are intended to be simulated. Real inference works locally with separately downloaded weights, according to the owner; weights and runtime inference were not available for this assessment.
-- The owner approved CX-002's D1–D7 directions on 2026-10-27. ADR-002/003 record them; D2 is implemented at the source/test boundary, while D1 and the broader target remain incomplete. Metric-to-run mapping, sample rights, and host eligibility remain evidence gates.
+- The owner approved CX-002's D1–D7 directions on 2026-10-27. ADR-002/003 record them; D1 is implemented at the public UI boundary and D2 at the browser source/test boundary. An actual approved chest X-ray sample, API exposure decision, metric-to-run mapping, and host eligibility remain gates.
 - CX-003's synthetic contract tests captured the former browser image retention, display-pixel CSV, PyTorch-text-only client fallback, and IT2/IT3 mode-selection defects. No real weights or installed application dependencies were available.
 
 ## Quick Queue
 
-**CX-005 is the sole `READY` task.** It addresses the approved sample-only public input using the CX-001/003 evidence. Status and dependency evidence govern promotion; table order alone does not.
+**CX-006 is the sole `READY` task.** It addresses the verified absence of an approved chest X-ray sample without adding an unvetted image. Status and dependency evidence govern promotion; table order alone does not.
 
 | ID | Status | Priority | Route | Executor | Task | Depends on | Validation gate |
 |---|---|---|---|---|---|---|---|
@@ -25,7 +25,8 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 | CX-002 | DONE | P0 | GPT-6.1 Sol · Medium | Owner + Codex documentation | Confirm demo, sample, sign-in, and hosting decisions | CX-001 evidence | D1–D7 approved; ADRs and requirements updated |
 | CX-003 | DONE locally | P1 | GPT-6.1 Sol · Low; Medium for cross-layer inference | Codex | Characterize approved demo and inference behavior | CX-001 and CX-002 | 5 Node and 5 Python contract tests passed |
 | CX-004 | DONE locally | P1 | GPT-6.1 Sol · Low | Codex | Stop automatic public-demo image retention | CX-003 | 5 focused client tests passed; browser run pending |
-| **CX-005** | **READY** | P1 | GPT-6.1 Sol · Low | Codex | Restrict public demo UI to sample input | CX-001/003 and D1 approval | No visitor upload control on `/demo`; annotation/export retained |
+| CX-005 | DONE locally | P1 | GPT-6.1 Sol · Low | Codex | Restrict public demo UI to sample input | CX-001/003 and D1 approval | 7 focused client tests passed; browser run pending |
+| **CX-006** | **READY** | P1 | GPT-6.1 Sol · Medium for provenance/rights review | Codex + owner approval | Vet a chest X-ray sample candidate | D1 approval and CX-005 | Source, license, de-identification, metadata and use gate documented |
 
 ## How to Use This File
 
@@ -110,7 +111,7 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 ## CX-005 — Restrict public demo UI to sample input
 
 - **Objective and bounded scope:** Align `/demo` with approved D1 by removing visitor file selection and drop controls from the public view while preserving the internal file-loading path for the sample and possible later reviewed modes.
-- **Priority / status:** P1 / **READY**. **Executor:** Codex.
+- **Priority / status:** P1 / **DONE locally**. **Executor:** Codex.
 - **Dependencies:** CX-001 upload-path evidence, CX-003 tests, and owner approval of D1 are recorded. CX-004 is complete.
 - **Inspect first:** `client/src/views/DemoWorkspaceView.vue`, `client/tests/demo-contract.test.cjs`, ADR-002 and `REQUIREMENTS.md`.
 - **Implementation boundary:** Public demo UI only. Preserve upload-capable code for later local research/radiologist review; do not add an unapproved chest X-ray asset, rewrite inference, or deploy.
@@ -118,8 +119,21 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 - **Validation:** Update and run focused synthetic client tests; run lint/build if dependencies become available; record browser limits and the remaining sample-provenance gate.
 - **Deliverables:** Small UI/test change and `SESSION.md` evidence.
 - **Commit message:** `fix(demo): restrict public image input to samples` with footer `Refs: CX-005`.
+- **Completion evidence (2026-10-27):** Removed public file picker, drop area, and upload invitation from `DemoWorkspaceView.vue`. The public action and empty state explicitly say the current image is synthetic. Internal loader/old upload handlers remain for later reviewed modes. Updated tests assert the template has no file input or drop handler and exercise synthetic sample loading through annotation, prediction request, and report generation. Existing CSV/PDF-invocation and retention tests still pass. `node --test client/tests/demo-contract.test.cjs` passed 7/7; `git diff --check` passed. The endpoint still accepts direct uploads if exposed, so this is a UI restriction only. Browser interaction, client lint/build, actual PDF and hosted behavior were not verified because `client/node_modules` is absent. No dependencies, cloud, accounts, or deployment changed.
+
+## CX-006 — Vet a chest X-ray sample candidate
+
+- **Objective and bounded scope:** Find one or two candidate public chest X-ray images to replace the synthetic illustration after evidence review. Document source, rights for redistribution in a public demo, de-identification basis, embedded metadata handling, and suitability for annotation.
+- **Priority / status:** P1 / **READY**. **Executor:** Codex prepares evidence; owner approves the selected asset.
+- **Dependencies:** D1 approved and CX-005 public UI restriction complete.
+- **Inspect first:** `REQUIREMENTS.md`, ADR-002, `docs/architecture/DEMO_CONTRACT.md`, and the current sample loader. Consult primary dataset/license sources rather than copying an image from a search result.
+- **Implementation boundary:** Research and decision package only. No asset addition, data upload, production deployment, or clinical claim until rights and privacy evidence are reviewed.
+- **Acceptance criteria:** Candidate table with direct source/license links, allowed use and attribution terms, known de-identification and metadata facts, and an explicit unknown/owner gate. Identify whether the candidate is suitable as a public downloadable asset; do not infer permission from accessibility.
+- **Validation:** Verify current source/license pages and inspect any provided candidate file metadata with deterministic tools if available; record unavailable checks. Owner selection is separate from local research completion.
+- **Deliverables:** Short sample-provenance note, updated task status and `SESSION.md`.
+- **Commit message:** `docs(demo): vet chest x-ray sample provenance` with footer `Refs: CX-006`.
 - **Completion evidence:** Pending.
 
 ## Queue rule
 
-After CX-005, assess owner requests and concrete defects, then add the smallest justified next task. Do not retire the legacy sign-in or duplicate screens without owner review. Archive completed task detail when it makes this file hard to scan.
+After CX-006, assess owner requests and concrete defects, then add the smallest justified next task. Do not retire the legacy sign-in or duplicate screens without owner review. Archive completed task detail when it makes this file hard to scan.

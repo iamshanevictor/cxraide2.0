@@ -11,27 +11,14 @@
       </div>
 
       <div class="grid">
-        <!-- Left: upload + controls -->
-        <UiCard title="Image" subtitle="Upload or use sample" class="panel">
+        <!-- Left: sample + controls -->
+        <UiCard title="Image" subtitle="Use the synthetic sample" class="panel">
           <div class="stack">
-            <div
-              class="drop"
-              :class="{ dragging: isDraggingFile }"
-              @dragover.prevent="onDragOver"
-              @dragleave.prevent="onDragLeave"
-              @drop.prevent="onDrop"
-              @click="triggerFile"
-            >
-              <div class="drop-title">
-                <i class="bi bi-cloud-arrow-up" /> Drag & drop or click
-              </div>
-              <div class="drop-sub text-muted">PNG/JPEG • images are not saved between visits</div>
-              <input ref="fileInput" class="hidden" type="file" accept="image/*" @change="onFileInput" />
-            </div>
+            <div class="hint text-muted">The current sample is a synthetic illustration, not a chest X-ray. Images are not saved between visits.</div>
 
             <div class="row">
               <UiButton variant="secondary" icon="bi bi-image" :disabled="isPredicting" @click="loadSyntheticSample">
-                Load sample
+                Load synthetic sample
               </UiButton>
               <UiButton variant="ghost" icon="bi bi-trash" :disabled="!imageUrl || isPredicting" @click="clearImage">
                 Clear
@@ -101,7 +88,7 @@
             <div v-if="!imageUrl" class="empty">
               <i class="bi bi-image" />
               <div class="empty-title">No image loaded</div>
-              <div class="text-muted">Upload a chest X-ray to start</div>
+              <div class="text-muted">Load the synthetic sample to start</div>
             </div>
 
             <div

@@ -27,6 +27,7 @@ function demoHarness() {
   const storageWrites = [];
   const downloads = [];
   const pdfExports = [];
+  const predictionRequests = [];
   let objectNumber = 0;
   const urls = new Map();
   const URL = {
@@ -40,6 +41,14 @@ function demoHarness() {
   const document = {
     body: { appendChild() {} },
     createElement(name) {
+      if (name === "canvas") {
+        return {
+          getContext() {
+            return { fillRect() {}, createRadialGradient() { return { addColorStop() {} }; } };
+          },
+          toDataURL() { return "data:image/png;base64,c3ludGhldGlj"; },
+        };
+      }
       assert.equal(name, "a");
       return { click() { downloads.push(this); }, remove() {} };
     },
@@ -51,7 +60,13 @@ function demoHarness() {
   };
   const component = loadScript("src/views/DemoWorkspaceView.vue", {
     UiCard: {}, UiButton: {}, UiBadge: {}, UiTooltip: {}, UiSkeleton: {},
-    ModelService: { getBoxColor: () => "#123456" },
+    ModelService: {
+      getBoxColor: () => "#123456",
+      async predict(file, options) {
+        predictionRequests.push({ file, options });
+        return { predictions: [{ class: "Cardiomegaly", score: 0.82, box: [1, 2, 10, 20] }] };
+      },
+    },
     html2pdf: () => ({ from(element) { this.element = element; return this; }, set(options) { this.options = options; return this; }, async save() { pdfExports.push({ element: this.element, options: this.options }); } }),
     useToast: () => ({ addToast() {} }),
     URL, document, localStorage, Blob, Date,
@@ -66,8 +81,38 @@ function demoHarness() {
   Object.defineProperty(view, "sortedPredictions", {
     get() { return component.computed.sortedPredictions.call(view); },
   });
-  return { component, view, saved, storageWrites, downloads, urls, pdfExports };
+  return { component, view, saved, storageWrites, downloads, urls, pdfExports, predictionRequests };
 }
+
+test("public demo exposes only a clearly labeled synthetic sample action", () => {
+  const source = fs.readFileSync(path.join(root, "src/views/DemoWorkspaceView.vue"), "utf8");
+  const template = source.match(/<template>([\s\S]*?)<\/template>/)?.[1];
+  assert.ok(template);
+  assert.match(template, /Load synthetic sample/);
+  assert.match(template, /synthetic illustration, not a chest X-ray/);
+  assert.doesNotMatch(template, /type="file"|@drop|@dragover|@click="triggerFile"/);
+});
+
+test("synthetic sample still enters the annotation and prediction flow", async () => {
+  const { view, predictionRequests } = demoHarness();
+  view.dataUrlToFile = async (_, name) => ({ name, type: "image/png" });
+  await view.loadSyntheticSample();
+  assert.match(view.imageFile.name, /^sample_\d+\.png$/);
+  assert.equal(view.imageUrl.startsWith("blob:"), true);
+
+  view.onPointerDown({ clientX: 30, clientY: 40, pointerId: 1, target: {}, currentTarget: {} });
+  view.onPointerMove({ clientX: 72, clientY: 67 });
+  view.onPointerUp();
+  assert.equal(view.boxes.length, 1);
+
+  await view.runPrediction();
+  assert.equal(predictionRequests.length, 1);
+  assert.equal(predictionRequests[0].file, view.imageFile);
+  assert.equal(predictionRequests[0].options.model_type, "CXR-IT3");
+  assert.equal(view.aiPredictions.length, 1);
+  view.generateReport();
+  assert.match(view.reportHtml, /Research demo/);
+});
 
 test("demo clears legacy image storage and keeps new images only in memory", () => {
   const { component, view, saved, storageWrites } = demoHarness();
