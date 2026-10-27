@@ -17,7 +17,7 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 
 ## Quick Queue
 
-CX-010 was approved by the owner with “passed, proceed 011.” CX-011's code and local checks are complete; owner browser validation with Flask stopped is next. CX-012 is already laid out as the conditional sample-provenance task. The legacy API still accepts direct image requests; no public backend or hosting choice has been approved. Sample rights and public hosting remain separate gates.
+CX-011 is owner-confirmed and complete. CX-012 source review is refreshed and waiting on an exact sample image/source identifier plus public redistribution terms or written permission. No chest X-ray candidate is present in the public asset folders and no sample is cleared. CX-013 is fully scoped as a conditional asset addition that requires both CX-012 clearance and explicit approval of that exact image. The legacy API still accepts direct image requests; no public backend or hosting choice has been approved.
 
 | ID | Status | Priority | Route | Executor | Task | Depends on | Validation gate |
 |---|---|---|---|---|---|---|---|
@@ -31,8 +31,9 @@ CX-010 was approved by the owner with “passed, proceed 011.” CX-011's code a
 | CX-008 | DONE locally | P1 | GPT-6 Luna · Low | Codex | Establish the local frontend/backend startup path | Current source and manifests | Commands and prerequisites documented; backend start observed; frontend/browser blocked by sandbox socket policy |
 | CX-009 | DONE | P1 | GPT-6 Luna · Low if follow-up troubleshooting is needed | Owner runs locally; Codex diagnoses reported output | Verify local browser-to-backend startup | CX-008 | Owner confirmed demo opened and mock predictions worked |
 | CX-010 | DONE | P1 | GPT-6 Sol · Low; GPT-6 Luna · Low for documentation | Codex proposes; owner reviews | Decide whether the public demo needs a hosted prediction API | CX-001, CX-003, CX-005, CX-009, D1/D4 approval | Owner approved browser simulation; ADR-004 updated |
-| **CX-011** | **WAITING_ON_OWNER** | P1 | GPT-6 Luna · Low; GPT-6 Sol · Low only for a newly surfaced security decision | Codex implements; owner verifies browser | Implement repeatable browser simulation in public demo | CX-010 browser-simulation direction approved | 8/8 focused tests, targeted lint, and production build pass; browser check with Flask stopped pending |
-| CX-012 | PLANNED | P1 | GPT-6 Luna · Low for file/provenance extraction; GPT-6 Sol · Low for rights/privacy review | Owner supplies source/file; Codex reviews | Review one owner-selected chest X-ray sample for the public demo | CX-011 browser validation passed; owner supplies exact file and redistribution terms | File identity, source/license, attribution, embedded metadata, visible content, and owner approval documented before asset addition |
+| **CX-011** | **DONE** | P1 | GPT-6 Luna · Low; GPT-6 Sol · Low only for a newly surfaced security decision | Codex implements; owner verifies browser | Implement repeatable browser simulation in public demo | CX-010 browser-simulation direction approved | 8/8 focused tests, targeted lint, production build pass; owner confirmed 011 |
+| CX-012 | WAITING_ON_OWNER | P1 | GPT-6 Luna · Low for file/provenance extraction; GPT-6 Sol · Low for rights/privacy review | Owner supplies source/file; Codex reviews | Review one owner-selected chest X-ray sample for the public demo | CX-011 owner confirmation; owner supplies exact file/source identifier and redistribution terms | File identity, source/license, attribution, embedded metadata, visible content, and owner approval documented before asset addition |
+| CX-013 | PLANNED | P1 | GPT-6 Luna · Low for bounded asset integration; GPT-6 Sol · Low if privacy/security questions arise | Codex implements; owner approves exact asset | Add one cleared chest X-ray sample to the public demo | CX-012 recommends the exact file is suitable and public redistribution is supported; owner explicitly approves that exact file | Approved asset only is added, source attribution is visible, no patient report or identifiers are included, and the demo loads the sample without network upload or persistence |
 
 ## How to Use This File
 
@@ -199,7 +200,7 @@ CX-010 was approved by the owner with “passed, proceed 011.” CX-011's code a
 ## CX-011 — Implement repeatable browser simulation in the public demo
 
 - **Objective:** Replace `/demo`'s API-dependent prediction call with a repeatable client-side demo scenario while preserving the annotation showcase.
-- **Priority / status:** P1 / **WAITING_ON_OWNER**. **Executor:** Codex implementation complete; owner browser validation next.
+- **Priority / status:** P1 / **DONE**. **Executor:** Codex implemented; owner confirmed.
 - **Model and effort:** GPT-6 Luna · Low for the scoped client change; GPT-6 Sol · Low only if new security or architecture evidence conflicts with the approved direction.
 - **Dependencies:** CX-010 owner approval of browser simulation for public `/demo`; CX-003 existing characterization evidence.
 - **Inspect first:** `client/src/views/DemoWorkspaceView.vue`, `client/src/services/modelService.js`, `client/tests/demo-contract.test.cjs`, and `docs/architecture/CX010_PREDICTION_BOUNDARY.md`.
@@ -209,21 +210,35 @@ CX-010 was approved by the owner with “passed, proceed 011.” CX-011's code a
 - **Deliverables:** Dedicated simulation module, focused characterization/update tests, updated demo wording and contract documentation, and `SESSION.md` evidence.
 - **Commit title:** `feat: simulate demo predictions in browser`.
 - **Completion evidence (2026-10-27):** Owner approved CX-010 with “passed, proceed 011.” Added fixed, cloned 512×512 finding fixtures in `client/src/services/demoSimulation.js`; `/demo` no longer calls `ModelService.predict`, sends images, or presents IT2/IT3 or confidence percentages. The result panel, overlay, action, and generated report label preset output as simulated/not image analysis. Manual annotation, CSV export, report generation, and PDF invocation remain wired. `node --test client/tests/demo-contract.test.cjs` passed 8/8; targeted ESLint passed with only an existing Browserslist data-age notice; `npm run build` passed with the existing large-chunk warning. Browser verification with Flask stopped and actual PDF rendering were blocked by sandbox socket access and remain owner checks. No server, config, dependencies, persistence, or deployment changed. GPT-6 Luna was the exposed runtime model; Low was selected, runtime effort was not exposed. Commit title: `feat: simulate demo predictions in browser`.
+- **Owner gate (2026-10-27):** Owner confirmed CX-011. This completes the manual browser-validation gate; PDF rendering and independent network-panel inspection remain unverified in this environment.
 
 ## CX-012 — Review an owner-selected chest X-ray sample
 
 - **Objective:** Assess one specific image and its permission evidence for inclusion in the public research demo.
-- **Priority / status:** P1 / **PLANNED**. **Executor:** Owner provides exact candidate and source terms; Codex performs source and file review.
+- **Priority / status:** P1 / **WAITING_ON_OWNER**. **Executor:** Owner provides exact candidate and source terms; Codex performs source and file review.
 - **Model and effort:** GPT-6 Luna · Low for file/provenance extraction; GPT-6 Sol · Low for rights/privacy analysis; Sol · Medium only if evidence conflicts.
-- **Dependencies:** CX-011 browser validation passed; owner supplies a specific image or source link plus the applicable redistribution terms or written permission.
+- **Dependencies:** CX-011 owner confirmation received; owner must supply a specific image (or direct source URL plus image identifier) and applicable redistribution terms or written permission. No such candidate was attached or found in `client/public` or `client/src/assets` during this session.
 - **Inspect first:** `docs/architecture/SAMPLE_PROVENANCE.md`, the owner-provided source/license terms, and the exact candidate file (when supplied).
 - **Implementation boundary:** Provenance and privacy review only until the owner approves that exact asset. Do not download from unrelated mirrors, add an image, or alter the file during review. No patient report or identifiable data.
 - **Acceptance criteria:** Record exact image identifier, direct source, redistribution rights/limits/attribution, visible-content review, format and embedded-metadata findings, hosting suitability, unknowns, and owner gate. Recommend add/decline; only add in a separate authorized implementation slice after explicit approval.
 - **Validation:** Verify primary terms and inspect the candidate file deterministically if supplied; record unavailable checks. No clinical-use or re-identification claims.
 - **Deliverables:** Updated provenance note and a proposed small asset-addition task only if the exact file is cleared and owner-approved.
 - **Commit title:** `docs: review demo image provenance`.
-- **Completion evidence:** Waiting for CX-011 browser confirmation and owner-provided candidate/terms.
+- **Completion evidence (2026-10-27):** CX-011 is owner-confirmed. Refreshed the primary PadChest agreement and Stanford CheXpert source page: PadChest requires specific prior written permission to redistribute; the CheXpert page describes the dataset but does not state public-demo redistribution rights. No candidate or permission evidence was supplied, so no image-level metadata/pixel review or clearance is possible. Waiting for the owner to provide an exact candidate and its applicable terms. NIH official portal terms and a specific file remain unverified. Commit title: `docs: review demo image provenance`.
+
+## CX-013 — Add one owner-approved chest X-ray sample to the public demo
+
+- **Objective:** Add exactly one image only after CX-012 verifies that the exact file may be publicly redistributed and has no identifying content, and the owner approves it.
+- **Priority / status:** P1 / **PLANNED**. **Executor:** Codex implements after the explicit owner gate.
+- **Model and effort:** GPT-6 Luna · Low for bounded asset integration; GPT-6 Sol · Low only if a privacy or security question arises.
+- **Dependencies:** CX-012 recommends the exact file is suitable and public redistribution is supported; owner explicitly approves that exact file. Do not treat approval to “proceed 013” as asset approval unless the exact file and evidence are identified in the task context.
+- **Inspect first:** CX-012 provenance evidence, approved exact file/checksum, current demo sample-loading path, and focused demo contract tests.
+- **Implementation boundary:** Add only the approved image and minimum sample-loader/attribution changes. Do not add reports, patient data, persistence, upload/network transmission, unrelated assets, backend, or deployment changes.
+- **Acceptance criteria:** The exact approved image loads as the public sample, attribution and research-only label appear, annotation/simulated results still work, and no image/report is transmitted or retained automatically.
+- **Validation:** Focused tests for sample path/labels and no upload/persistence; inspect changed asset metadata/checksum and run relevant client checks. Record any environmental limitation.
+- **Deliverables:** Approved sample asset, minimal integration, provenance and contract documentation, updated handoff.
+- **Commit title:** `feat: add approved demo image`.
 
 ## Queue rule
 
-CX-011 is waiting on the owner's browser check with Flask stopped. If it passes, reply `passed, proceed 012` and provide the exact candidate image/source plus redistribution terms for CX-012. If the browser check fails, report the error instead. If sample rights or privacy remain uncertain, keep the synthetic illustration. Inspect remaining site-wide API dependencies before a hosting decision. Do not retire the legacy sign-in or duplicate screens without owner review. Archive completed task detail when this file makes the live queue hard to scan.
+CX-011 is confirmed complete. CX-012 is blocked on the owner providing one exact image (or direct source URL and image identifier) and applicable public redistribution license/terms or written permission. After file-level privacy/metadata review, any asset addition requires explicit owner approval of that exact file; CX-013 is prepared for that slice. If rights or privacy remain uncertain, retain the synthetic illustration. Inspect remaining site-wide API dependencies before a hosting decision. Do not retire the legacy sign-in or duplicate screens without owner review. Archive completed task detail when this file makes the live queue hard to scan.

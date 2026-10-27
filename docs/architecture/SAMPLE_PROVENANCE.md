@@ -1,6 +1,6 @@
 # Chest X-ray sample provenance review
 
-Reviewed: 2026-10-27. This is a source review for the public research demo; no image was selected, downloaded, or added to the repository. Candidate-level statements do not establish that an individual file is safe to publish.
+Reviewed: 2026-10-27 (source terms refreshed for CX-012). This is a source review for the public research demo; no image was selected, downloaded, or added to the repository. Candidate-level statements do not establish that an individual file is safe to publish.
 
 ## Candidate assessment
 
@@ -24,4 +24,4 @@ Reviewed: 2026-10-27. This is a source review for the public research demo; no i
 
 ## Limits of this review
 
-No candidate image was provided or downloaded, so pixel-level visual review, metadata inspection, embedded-text screening, and checksum recording were not possible. The NIH Box portal did not expose its terms to the browsing tool; secondary license descriptions were not treated as permission. The CheXpert access page did not establish redistribution rights. This is a technical provenance review, not a legal determination.
+No candidate image was provided or downloaded, so pixel-level visual review, metadata inspection, embedded-text screening, and checksum recording were not possible. The repository's `client/public` and `client/src/assets` folders contain no chest X-ray candidate. The NIH Box portal did not expose its terms to the browsing tool; secondary license descriptions were not treated as permission. The refreshed CheXpert access page did not establish redistribution rights. This is a technical provenance review, not a legal determination. CX-012 remains waiting for the owner to supply one exact image (or direct source URL and identifier) and its applicable public redistribution terms or written permission.
