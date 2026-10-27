@@ -28,6 +28,8 @@ function demoHarness() {
   const downloads = [];
   const pdfExports = [];
   const predictionRequests = [];
+  const simulationResults = loadScript("src/services/demoSimulation.js");
+  let simulationCalls = 0;
   let objectNumber = 0;
   const urls = new Map();
   const URL = {
@@ -60,6 +62,12 @@ function demoHarness() {
   };
   const component = loadScript("src/views/DemoWorkspaceView.vue", {
     UiCard: {}, UiButton: {}, UiBadge: {}, UiTooltip: {}, UiSkeleton: {},
+    DemoSimulation: {
+      createDemoPredictions() {
+        simulationCalls += 1;
+        return simulationResults.createDemoPredictions();
+      },
+    },
     ModelService: {
       getBoxColor: () => "#123456",
       async predict(file, options) {
@@ -81,7 +89,7 @@ function demoHarness() {
   Object.defineProperty(view, "sortedPredictions", {
     get() { return component.computed.sortedPredictions.call(view); },
   });
-  return { component, view, saved, storageWrites, downloads, urls, pdfExports, predictionRequests };
+  return { component, view, saved, storageWrites, downloads, urls, pdfExports, predictionRequests, simulationResults, get simulationCalls() { return simulationCalls; } };
 }
 
 test("public demo exposes only a clearly labeled synthetic sample action", () => {
@@ -90,11 +98,35 @@ test("public demo exposes only a clearly labeled synthetic sample action", () =>
   assert.ok(template);
   assert.match(template, /Load synthetic sample/);
   assert.match(template, /synthetic illustration, not a chest X-ray/);
+  assert.match(source, /Preset findings demonstrate the interface only/);
+  assert.match(source, /Show simulated findings/);
   assert.doesNotMatch(template, /type="file"|@drop|@dragover|@click="triggerFile"/);
+  assert.doesNotMatch(template, /CXR-IT2|CXR-IT3|AI model|confidence scores/);
+  assert.doesNotMatch(source, /ModelService\.predict/);
 });
 
-test("synthetic sample still enters the annotation and prediction flow", async () => {
-  const { view, predictionRequests } = demoHarness();
+test("demo simulation fixture is repeatable, private, and uses valid 512px boxes", () => {
+  const simulation = loadScript("src/services/demoSimulation.js");
+  const first = simulation.createDemoPredictions();
+  const second = simulation.createDemoPredictions();
+
+  assert.deepEqual(first, second);
+  assert.notStrictEqual(first.predictions, second.predictions);
+  assert.equal(first.source, "browser-simulation");
+  assert.equal(first.scenario, "synthetic-illustration");
+  assert.equal(first.predictions.length, 2);
+  for (const prediction of first.predictions) {
+    assert.equal(prediction.source, "browser-simulation");
+    assert.equal(Object.hasOwn(prediction, "score"), false);
+    const [x1, y1, x2, y2] = prediction.box;
+    assert.ok(x1 >= 0 && y1 >= 0 && x2 <= 512 && y2 <= 512);
+    assert.ok(x2 > x1 && y2 > y1);
+  }
+});
+
+test("synthetic sample still enters annotation and repeatable browser simulation without API calls", async () => {
+  const harness = demoHarness();
+  const { view, predictionRequests, simulationResults } = harness;
   view.dataUrlToFile = async (_, name) => ({ name, type: "image/png" });
   await view.loadSyntheticSample();
   assert.match(view.imageFile.name, /^sample_\d+\.png$/);
@@ -106,12 +138,15 @@ test("synthetic sample still enters the annotation and prediction flow", async (
   assert.equal(view.boxes.length, 1);
 
   await view.runPrediction();
-  assert.equal(predictionRequests.length, 1);
-  assert.equal(predictionRequests[0].file, view.imageFile);
-  assert.equal(predictionRequests[0].options.model_type, "CXR-IT3");
-  assert.equal(view.aiPredictions.length, 1);
+  assert.equal(predictionRequests.length, 0);
+  assert.equal(harness.simulationCalls, 1);
+  assert.equal(view.predictionSource, "browser-simulation");
+  assert.deepEqual(view.aiPredictions, simulationResults.createDemoPredictions().predictions);
   view.generateReport();
-  assert.match(view.reportHtml, /Research demo/);
+  assert.match(view.reportHtml, /Browser simulation/);
+  assert.match(view.reportHtml, /Preset simulated examples/);
+  assert.match(view.reportHtml, /not based on image analysis/i);
+  assert.doesNotMatch(view.reportHtml, /IT2|IT3|confidence|AI-assisted interpretation/i);
 });
 
 test("demo clears legacy image storage and keeps new images only in memory", () => {
@@ -160,16 +195,19 @@ test("manual boxes use display pixels and CSV exports only those boxes", async (
   assert.equal(csv.includes("Nodule/Mass"), false);
 });
 
-test("report includes research disclaimer but no result provenance; PDF export uses generated HTML", async () => {
+test("demo report labels simulated output and PDF export uses generated HTML", async () => {
   const { view, pdfExports } = demoHarness();
-  view.aiPredictions = [{ class: "Cardiomegaly", score: 0.82, box: [1, 2, 3, 4] }];
+  view.aiPredictions = [{ class: "Cardiomegaly", source: "browser-simulation", box: [1, 2, 3, 4] }];
+  view.predictionSource = "browser-simulation";
   view.boxes = [{ id: "synthetic-box" }];
   view.generateReport();
-  assert.match(view.reportHtml, /Cardiomegaly \(82%\)/);
+  assert.match(view.reportHtml, /Cardiomegaly/);
   assert.match(view.reportHtml, /Expert boxes: 1/);
   assert.match(view.reportHtml, /Research demo/);
+  assert.match(view.reportHtml, /Result source: Browser simulation/);
+  assert.match(view.reportHtml, /not generated by a trained model/i);
+  assert.doesNotMatch(view.reportHtml, /\d+%/);
   assert.match(view.reportHtml, /Not for clinical diagnosis/);
-  assert.doesNotMatch(view.reportHtml, /browser mock|server mock|real model/i);
   view.$refs.reportEl = { innerHTML: view.reportHtml };
   await view.downloadPdf();
   assert.equal(pdfExports.length, 1);

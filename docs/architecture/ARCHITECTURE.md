@@ -1,6 +1,6 @@
 # Architecture
 
-Status: assessed from the repository on 2026-10-27. **Observed** means present in code or documentation; the target direction was approved on 2026-10-27 but is not implemented or deployed.
+Status: assessed from the repository on 2026-10-27. **Observed** means present in code or documentation; browser simulation is implemented for `/demo`, while static hosting is not deployed.
 
 ## Observed current system
 
@@ -23,17 +23,19 @@ Backend production host: not established in this repository
 
 The Flask model loader uses a process-local background thread, not a durable queue. Local setup scripts install dependencies and default to mock models and development login. A separate [model-training repository](https://github.com/iamshanevictor/CXRaide2.0-Model_Training) contains preparation and training notebooks. The exact mapping between this application's displayed metrics, local weights and experiment runs remains unverified.
 
+CX-011 changed only the public `/demo` prediction action: it reads fixed findings from `client/src/services/demoSimulation.js` and does not call `/api/predict` or `/api/model-status`. The annotation screen still uses `modelService.js` for colors, and other older workflows retain their prior API behavior. The unauthenticated Flask upload route still exists; no public backend should be exposed based on the UI-only upload restriction.
+
 Important source files: `client/src/router/index.js` (page map and browser guard); `client/src/views/DemoWorkspaceView.vue` (public sample, drawing, exports); `client/src/views/AnnotateView.vue` and `UploadCXRView.vue` (older protected workflows); `client/src/services/modelService.js` (image preparation and prediction HTTP contract); `server/app.py` (Flask application and development login); `server/model_service.py` (mock/real model loading and inference); `client/package.json`, `server/requirements*.txt`, `client/vite.config.js`, and `client/vercel.json` (build and deployment assumptions).
 
-Observed risks: development login accepts a username without verifying a password; browser route guard accepts an unsigned offline token; inference has no verified user boundary; the public API still accepts image uploads if directly exposed; report construction inserts user fields into HTML; model-mode selection and mock-without-Torch behavior have characterized defects. CX-004 removed automatic demo image retention and clears its legacy browser storage keys on mount. CX-005 removed public visitor upload controls from the demo template while preserving internal code for review. These are code findings, not a claim that a hosted instance was tested.
+Observed risks: development login accepts a username without verifying a password; browser route guard accepts an unsigned offline token; legacy inference has no verified user boundary; the Flask API still accepts image uploads if directly exposed; legacy report construction inserts user fields into HTML; model-mode selection and mock-without-Torch behavior have characterized defects. CX-004 removed automatic demo image retention and clears its legacy browser storage keys on mount. CX-005 removed public visitor upload controls. CX-011 removed image requests from the public demo prediction flow. These are code findings, not a claim that a hosted instance was tested.
 
 The demo's current `Load sample` action constructs a synthetic 512×512 gradient/noise image in canvas (`DemoWorkspaceView.vue`), rather than loading a real sample chest X-ray. This differs from the owner's desired showcase and needs a source/permission decision before an asset is added.
 
-The source-backed public demo behavior, API boundary, coordinates, exports, simulation modes, and privacy findings are recorded in [the CX-001 demo contract](DEMO_CONTRACT.md). That note is discovery evidence, not an approved implementation design.
+The source-backed public demo behavior and privacy findings are recorded in the [demo contract](DEMO_CONTRACT.md). The [CX-010 decision note](CX010_PREDICTION_BOUNDARY.md) records the owner-approved browser simulation direction and the API risk that remains.
 
-CX-003 added focused Node/Python contract tests; CX-004/005 updated the demo tests. No CI workflow, schema, or migrations were found. Python syntax parsing passed for the two server source files. Builds, lint, browser interaction, runtime inference, model accuracy, hosted operation, and provider accounts were not verified because application dependencies and model files were absent.
+CX-003 added focused Node/Python contract tests; CX-004/005/011 updated the demo tests. No CI workflow, schema, or migrations were found. Python syntax parsing passed for the two server source files. CX-011's focused client contract suite and targeted ESLint pass. Post-change browser interaction with Flask stopped, actual PDF rendering, model accuracy, hosted operation, and provider accounts remain unverified.
 
-## Approved target direction, implementation pending
+## Approved target direction and remaining gates
 
 ```text
 Public Vite SPA on a suitable free static host, potentially Vercel
@@ -52,7 +54,7 @@ Optional later, only if a real account/data requirement is approved
   -> Python service remains responsible for PyTorch inference
 ```
 
-For the **current** public showcase, evaluate a static browser simulation first; adoption depends on contract, privacy and parity validation. Browser simulation must remain clearly labeled. If a hosted mock API is retained, its output contract, resource limits, CORS, abuse controls, and availability require validation. Do not introduce Supabase solely to satisfy a hypothetical future account system.
+For the **current** public showcase, the approved browser simulation is implemented in `/demo`; confirm the flow in a browser with Flask stopped before release. The result contract labels findings as presets and says they are not image analysis. If a hosted mock API is reconsidered, its output contract, request limits, CORS, abuse controls, logging/retention, and availability require a new review. Do not introduce Supabase solely to satisfy a hypothetical future account system.
 
 Vercel documents Vite support, but Hobby is for personal, non-commercial use; actual eligibility must be checked by the owner. Supabase Free currently has capacity limits and pauses after inactivity, so it is not a default prerequisite for this demo. Supabase Edge Functions use a Deno-compatible runtime with limited memory/CPU, unlike this Python/PyTorch model. Pricing and limits can change; recheck at a hosting decision. Sources: [Vercel Vite](https://vercel.com/docs/frameworks/frontend/vite), [Vercel Hobby](https://vercel.com/docs/plans/hobby), [Supabase pricing](https://supabase.com/pricing), [Edge runtime](https://supabase.com/docs/guides/functions), [Edge limits](https://supabase.com/docs/guides/functions/limits).
 
@@ -63,7 +65,7 @@ If persistence is later approved, use server-verified identity, explicit Postgre
 | Area | Retain/refactor | Migrate/replace | Current recommendation and gate |
 |---|---|---|---|
 | Vue/Vite | Keep current routes and characterize annotation/export behavior; simplify overlapping screens only after use is confirmed. Lower change risk. | Full UI rewrite would require broad interaction and report parity work without a known need. | Retain. Reconsider if focused changes repeatedly cross all three workspace screens. |
-| Demo predictions | Keep clearly marked simulation and validate whether browser-only execution meets the public contract. | Hosted mock API adds operating cost/abuse surface; real hosted inference adds large-model runtime cost. | Compare browser and hosted paths by output parity, latency, cost, and privacy before choosing. |
+| Demo predictions | Keep deterministic, clearly marked browser simulation in public `/demo`; validate result, report, and export parity. | Hosted mock API adds an image-processing and abuse surface; real hosted inference adds large-model runtime needs. | Use the approved browser simulation; retain local Python inference. Reopen API hosting only for a concrete demonstrated need. |
 | Python real inference | Retain for local research use and verify with trusted weights. | A new runtime would need model and numeric parity evidence. | Retain. Measure accuracy parity, startup, memory, and latency before any host migration. |
 | Identity/data | Keep public demo without accounts or a database. | Supabase Auth/Postgres/Storage would add account and retention obligations without an approved current use. | Defer. Reopen only for an approved persistent radiologist workflow with authorization tests. |
 

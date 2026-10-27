@@ -31,3 +31,13 @@ Each entry states its status. Approval of a direction does not mean its implemen
 - Decision: Retain working Vue and Python code. Characterize sample/demo, export, mode selection, and local inference before changing them. Improve in small vertical slices. Put consequential validation and any future authorization at a verified server boundary; do not trust browser-supplied ownership. Use one authoritative owner per business rule.
 - Consequences: Early work is testing and contract discovery; simplification or retirement of a screen needs owner review and evidence.
 - Supersedes: none.
+
+## ADR-004 — Public demo prediction boundary
+
+- Date: 2026-10-27
+- Status: **APPROVED by owner, 2026-10-27**
+- Context: The public UI has no upload controls, but it sends a derived image to the unauthenticated Flask prediction route, which accepts image uploads directly. Hosted output is meant to be simulated, and the owner prefers low-cost hosting. [CX-010's source review](CX010_PREDICTION_BOUNDARY.md) records the current contract and tradeoffs.
+- Alternatives: browser simulation for the public demo; host the current Flask mock path after repair and hardening; or host a new sample-ID-only mock endpoint.
+- Decision: Use repeatable, explicitly labeled browser scenarios for the public `/demo` route. Keep Python inference for local research. Do not expose the current image-upload endpoint as part of a static public demo.
+- Consequences: A scoped client change needs result/report parity and browser-network validation. Sample rights, metric mapping, static-host eligibility, and deployment remain separate gates. Approval authorizes the bounded CX-011 client slice, not hosting or deployment.
+- Supersedes: none; refines approved ADR-002 direction D3 after owner approval.

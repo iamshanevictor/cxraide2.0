@@ -17,7 +17,7 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 
 ## Quick Queue
 
-**CX-010 is the sole `READY` task.** The owner confirmed the local demo opened and mock predictions worked (CX-009). Next, resolve whether the public demo needs a hosted Flask prediction API, since the UI is upload-free but the API accepts image requests. The direction remains a working public research demo; sample rights and public hosting are separate gates. Status and dependency evidence govern promotion; table order alone does not.
+CX-010 was approved by the owner with “passed, proceed 011.” CX-011's code and local checks are complete; owner browser validation with Flask stopped is next. CX-012 is already laid out as the conditional sample-provenance task. The legacy API still accepts direct image requests; no public backend or hosting choice has been approved. Sample rights and public hosting remain separate gates.
 
 | ID | Status | Priority | Route | Executor | Task | Depends on | Validation gate |
 |---|---|---|---|---|---|---|---|
@@ -30,7 +30,9 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 | CX-007 | DONE locally | P2 | GPT-6 Luna · Low for documentation; GPT-6 Sol · Low for routing judgment | Codex | Update model and effort routing | Owner preference | Workflow, queue and handoff aligned; `git diff --check` passed |
 | CX-008 | DONE locally | P1 | GPT-6 Luna · Low | Codex | Establish the local frontend/backend startup path | Current source and manifests | Commands and prerequisites documented; backend start observed; frontend/browser blocked by sandbox socket policy |
 | CX-009 | DONE | P1 | GPT-6 Luna · Low if follow-up troubleshooting is needed | Owner runs locally; Codex diagnoses reported output | Verify local browser-to-backend startup | CX-008 | Owner confirmed demo opened and mock predictions worked |
-| **CX-010** | **READY** | P1 | GPT-6 Sol · Low; GPT-6 Luna · Low for documentation | Codex proposes; owner reviews | Decide whether the public demo needs a hosted prediction API | CX-001, CX-003, CX-005, CX-009, D1/D4 approval | Options, payload/privacy implications, and recommendation recorded for owner review |
+| CX-010 | DONE | P1 | GPT-6 Sol · Low; GPT-6 Luna · Low for documentation | Codex proposes; owner reviews | Decide whether the public demo needs a hosted prediction API | CX-001, CX-003, CX-005, CX-009, D1/D4 approval | Owner approved browser simulation; ADR-004 updated |
+| **CX-011** | **WAITING_ON_OWNER** | P1 | GPT-6 Luna · Low; GPT-6 Sol · Low only for a newly surfaced security decision | Codex implements; owner verifies browser | Implement repeatable browser simulation in public demo | CX-010 browser-simulation direction approved | 8/8 focused tests, targeted lint, and production build pass; browser check with Flask stopped pending |
+| CX-012 | PLANNED | P1 | GPT-6 Luna · Low for file/provenance extraction; GPT-6 Sol · Low for rights/privacy review | Owner supplies source/file; Codex reviews | Review one owner-selected chest X-ray sample for the public demo | CX-011 browser validation passed; owner supplies exact file and redistribution terms | File identity, source/license, attribution, embedded metadata, visible content, and owner approval documented before asset addition |
 
 ## How to Use This File
 
@@ -39,7 +41,8 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 3. Record observations separately from inferences. Complete task-specific validation and note checks that could not run.
 4. Record local completion evidence and update `SESSION.md`. Promote a dependent task only when each prerequisite's required evidence exists. Keep hosted and owner acceptance separate.
 5. Update an ADR for a consequential decision. Archive lengthy completed details if the live queue becomes hard to scan. Do not invent tasks when the queue is exhausted.
-6. Give every task a concise Conventional Commit title with an optional short, single-word code-area scope. Keep task IDs in this queue, not in commit messages or footers. Repeat the title in the completion report. This names a reviewable change; it does not create a Git commit automatically. Recorded historical titles remain unchanged.
+6. Give every task a concise, single-line Conventional Commit title in `type: description` form. Omit scopes, second message lines, and footers; keep task IDs in this queue. Repeat the title in the completion report. This names a reviewable change; it does not create a Git commit automatically. Recorded historical titles remain unchanged except for the owner-requested CX-009 wording.
+7. Whenever a task enters `WAITING_ON_OWNER`, prepare its likely successor as a fully specified `PLANNED` task with the owner decision as an explicit dependency. If the owner says `passed, proceed 0XX`, treat that as approval of the named pending decision and authorization to start that prepared task, unless the task record reveals a material mismatch. Replan only if the owner changes the direction.
 
 ## Status Legend
 
@@ -176,23 +179,51 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 - **Acceptance criteria:** The local frontend opens at `http://127.0.0.1:5173`, and the public synthetic demo can reach the mock backend at `http://127.0.0.1:5000`; otherwise, exact console/terminal errors are available for diagnosis.
 - **Validation:** Owner observes browser load and mock status/prediction flow, or supplies the error text with any secrets removed. No clinical or real-patient data.
 - **Deliverables:** Owner's startup result; if a source-backed defect is found, a separate small implementation task with acceptance criteria.
-- **Commit title:** `docs(dev): verify local startup`.
-- **Completion evidence (2026-10-27):** Owner confirmed the frontend opened and mock predictions worked using the local setup. Codex could not independently observe the browser because the execution sandbox denies local socket access. Commit title: `docs(dev): verify local startup`.
+- **Commit title:** `docs: verify local startup`.
+- **Completion evidence (2026-10-27):** Owner confirmed the frontend opened and mock predictions worked using the local setup. Codex could not independently observe the browser because the execution sandbox denies local socket access. Commit title updated to the owner's requested unscoped form: `docs: verify local startup`.
 
 ## CX-010 — Decide whether the public demo needs a hosted prediction API
 
 - **Objective:** Recommend whether to keep a hosted mock prediction endpoint or move simulated results into the browser so the public showcase can run as a static site.
-- **Priority / status:** P1 / **READY**. **Executor:** Codex prepares options; owner reviews the direction.
+- **Priority / status:** P1 / **DONE**. **Executor:** Codex prepared options; owner approved the direction.
 - **Model and effort:** GPT-6 Sol · Low for security and architecture analysis; GPT-6 Luna · Low for bounded documentation edits.
 - **Dependencies:** CX-001 demo/API contract, CX-003 characterization evidence, CX-005 public upload UI change, CX-009 successful local mock run, and approved D1/D4 directions.
 - **Inspect first:** `docs/architecture/DEMO_CONTRACT.md`, `docs/architecture/ARCHITECTURE.md`, `client/src/services/modelService.js`, `client/src/views/DemoWorkspaceView.vue`, `server/app.py`, `server/model_service.py`, and ADR-002/003.
 - **Implementation boundary:** Decision package only. No API removal, client rewrite, deployment, or provider/account change. Preserve annotation and simulated-result behavior in any recommendation.
 - **Acceptance criteria:** Compare browser simulation with a hosted mock API by required behavior, image transmission, abuse/security surface, deployment complexity/cost, and observable parity. Account for the finding that the public UI has no upload controls while the API accepts image uploads directly. State unknowns and recommend one option for owner approval.
 - **Validation:** Trace payload and response paths in source and existing characterization tests; do not add or run tests for this decision task. No real image or report data.
-- **Deliverables:** Concise options/recommendation note, updated task/session state, and owner review gate.
-- **Commit title:** `docs(arch): decide public prediction boundary`.
-- **Completion evidence:** Pending.
+- **Deliverables:** [Options and recommendation](docs/architecture/CX010_PREDICTION_BOUNDARY.md), ADR-004, updated task/session state, and owner review gate.
+- **Commit title:** `docs: decide public prediction boundary`.
+- **Completion evidence (2026-10-27):** Traced demo file loading, request payload, unauthenticated Flask route, no-PyTorch error fallback, response adapter, view/report labels, and existing characterization tests. The [decision note](docs/architecture/CX010_PREDICTION_BOUNDARY.md) compares browser simulation, the current hosted Flask path, and a sample-ID-only hosted alternative. The owner approved browser simulation for public `/demo` with “passed, proceed 011”; ADR-004 records approval. No hosted service or deployment was selected. GPT-6 Sol was the exposed runtime model; Low was the selected task effort and actual effort was not exposed. Commit title: `docs: decide public prediction boundary`.
+
+## CX-011 — Implement repeatable browser simulation in the public demo
+
+- **Objective:** Replace `/demo`'s API-dependent prediction call with a repeatable client-side demo scenario while preserving the annotation showcase.
+- **Priority / status:** P1 / **WAITING_ON_OWNER**. **Executor:** Codex implementation complete; owner browser validation next.
+- **Model and effort:** GPT-6 Luna · Low for the scoped client change; GPT-6 Sol · Low only if new security or architecture evidence conflicts with the approved direction.
+- **Dependencies:** CX-010 owner approval of browser simulation for public `/demo`; CX-003 existing characterization evidence.
+- **Inspect first:** `client/src/views/DemoWorkspaceView.vue`, `client/src/services/modelService.js`, `client/tests/demo-contract.test.cjs`, and `docs/architecture/CX010_PREDICTION_BOUNDARY.md`.
+- **Implementation boundary:** Public `/demo` only. Keep the old Python API and real local inference path intact. Use a small dedicated browser module for fixed scenario data; do not send an image or auth token to Flask from this route. No new backend, database, storage, sample radiograph asset, or deployment.
+- **Acceptance criteria:** Repeated runs on the interim synthetic illustration return the same preset finding labels and valid 512×512 boxes, without displaying confidence percentages. Results and generated reports clearly say simulated and not diagnostic; avoid presenting IT2/IT3 or unverified metrics as active model output. Public demo prediction works with the Flask server stopped. Drawing, prediction overlays, CSV export, and report/PDF flow remain usable. Images and findings are not automatically persisted.
+- **Validation:** Focused tests prove stable fixture output, explicit simulated provenance, and that the demo does not call the prediction method. Node tests, targeted ESLint, and Vite production build passed. Owner must check the browser path with Flask stopped; report/PDF rendering and network panel remain unverified here.
+- **Deliverables:** Dedicated simulation module, focused characterization/update tests, updated demo wording and contract documentation, and `SESSION.md` evidence.
+- **Commit title:** `feat: simulate demo predictions in browser`.
+- **Completion evidence (2026-10-27):** Owner approved CX-010 with “passed, proceed 011.” Added fixed, cloned 512×512 finding fixtures in `client/src/services/demoSimulation.js`; `/demo` no longer calls `ModelService.predict`, sends images, or presents IT2/IT3 or confidence percentages. The result panel, overlay, action, and generated report label preset output as simulated/not image analysis. Manual annotation, CSV export, report generation, and PDF invocation remain wired. `node --test client/tests/demo-contract.test.cjs` passed 8/8; targeted ESLint passed with only an existing Browserslist data-age notice; `npm run build` passed with the existing large-chunk warning. Browser verification with Flask stopped and actual PDF rendering were blocked by sandbox socket access and remain owner checks. No server, config, dependencies, persistence, or deployment changed. GPT-6 Luna was the exposed runtime model; Low was selected, runtime effort was not exposed. Commit title: `feat: simulate demo predictions in browser`.
+
+## CX-012 — Review an owner-selected chest X-ray sample
+
+- **Objective:** Assess one specific image and its permission evidence for inclusion in the public research demo.
+- **Priority / status:** P1 / **PLANNED**. **Executor:** Owner provides exact candidate and source terms; Codex performs source and file review.
+- **Model and effort:** GPT-6 Luna · Low for file/provenance extraction; GPT-6 Sol · Low for rights/privacy analysis; Sol · Medium only if evidence conflicts.
+- **Dependencies:** CX-011 browser validation passed; owner supplies a specific image or source link plus the applicable redistribution terms or written permission.
+- **Inspect first:** `docs/architecture/SAMPLE_PROVENANCE.md`, the owner-provided source/license terms, and the exact candidate file (when supplied).
+- **Implementation boundary:** Provenance and privacy review only until the owner approves that exact asset. Do not download from unrelated mirrors, add an image, or alter the file during review. No patient report or identifiable data.
+- **Acceptance criteria:** Record exact image identifier, direct source, redistribution rights/limits/attribution, visible-content review, format and embedded-metadata findings, hosting suitability, unknowns, and owner gate. Recommend add/decline; only add in a separate authorized implementation slice after explicit approval.
+- **Validation:** Verify primary terms and inspect the candidate file deterministically if supplied; record unavailable checks. No clinical-use or re-identification claims.
+- **Deliverables:** Updated provenance note and a proposed small asset-addition task only if the exact file is cleared and owner-approved.
+- **Commit title:** `docs: review demo image provenance`.
+- **Completion evidence:** Waiting for CX-011 browser confirmation and owner-provided candidate/terms.
 
 ## Queue rule
 
-After CX-010, wait for owner review of the public prediction boundary before making code changes. Then choose a sample only if its redistribution rights can be verified; otherwise retain the synthetic illustration. Inspect and address demo/API behavior needed for a safe public release before a hosting decision. Do not turn later stages into implementation tasks until the relevant code and owner gates are verified. Do not retire the legacy sign-in or duplicate screens without owner review. Archive completed task detail when it makes this file hard to scan.
+CX-011 is waiting on the owner's browser check with Flask stopped. If it passes, reply `passed, proceed 012` and provide the exact candidate image/source plus redistribution terms for CX-012. If the browser check fails, report the error instead. If sample rights or privacy remain uncertain, keep the synthetic illustration. Inspect remaining site-wide API dependencies before a hosting decision. Do not retire the legacy sign-in or duplicate screens without owner review. Archive completed task detail when this file makes the live queue hard to scan.
