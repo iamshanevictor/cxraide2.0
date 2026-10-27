@@ -33,7 +33,7 @@ The public demo's `Load chest X-ray sample` action now loads the owner-provided 
 
 The source-backed public demo behavior and privacy findings are recorded in the [demo contract](DEMO_CONTRACT.md). The [CX-010 decision note](CX010_PREDICTION_BOUNDARY.md) records the owner-approved browser simulation direction and the API risk that remains.
 
-The [CX-014 route audit](CX014_PUBLIC_ROUTE_DEPENDENCIES.md) traces each browser route's API and data path. The five showcase routes are source-compatible with static hosting; legacy login and researcher routes still depend on Flask. A public-build route boundary is proposed for owner review before hosting work.
+The [CX-014 route audit](CX014_PUBLIC_ROUTE_DEPENDENCIES.md) traces each browser route's API and data path. The five showcase routes are source-compatible with static hosting; legacy login and researcher routes still depend on Flask. CX-015 now selects only the five showcase routes in production builds and retains legacy routes/services in local development. Deterministic build/test verification is pending; this is not a hosting or deployment change.
 
 CX-003 added focused Node/Python contract tests; CX-004/005/011 updated the demo tests. No CI workflow, schema, or migrations were found. Python syntax parsing passed for the two server source files. CX-011's focused client contract suite and targeted ESLint pass. Post-change browser interaction with Flask stopped, actual PDF rendering, model accuracy, hosted operation, and provider accounts remain unverified.
 

@@ -1,8 +1,17 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { checkSession } from "../utils/api";
-import modelService from "../services/modelService";
 
-const routes = [
+const isPublicBuild = import.meta.env.PROD;
+const legacyServices = isPublicBuild
+  ? null
+  : Promise.all([
+      import("../utils/api"),
+      import("../services/modelService"),
+    ]).then(([api, model]) => ({
+      checkSession: api.checkSession,
+      modelService: model.default,
+    }));
+
+const publicRoutes = [
   {
     path: "/",
     name: "landing",
@@ -33,6 +42,9 @@ const routes = [
     component: () => import("../views/AboutView.vue"),
     meta: { layout: "public" },
   },
+];
+
+const legacyRoutes = [
   {
     path: "/home",
     name: "home",
@@ -61,7 +73,12 @@ const routes = [
     component: () => import("../views/UploadCXRView.vue"), // Dynamic import
     meta: { requiresAuth: true },
   },
-  // Add a catch-all 404 route
+];
+
+const routes = [
+  ...publicRoutes,
+  ...(isPublicBuild ? [] : legacyRoutes),
+  // Unknown and local-only paths return visitors to the public landing page.
   {
     path: "/:pathMatch(.*)*",
     redirect: "/",
@@ -101,6 +118,11 @@ setInterval(() => {
 }, 10000);
 
 router.beforeEach(async (to, from, next) => {
+  if (isPublicBuild) {
+    return next();
+  }
+
+  const { checkSession, modelService } = await legacyServices;
   console.log("[Router] Navigation started to:", to.path, "from:", from.path);
 
   // Special handling for leaving AnnotateView page
