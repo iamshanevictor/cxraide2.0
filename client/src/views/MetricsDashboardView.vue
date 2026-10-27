@@ -6,55 +6,55 @@
       </div>
 
       <div class="grid-3">
-        <UiCard title="mAP" subtitle="Mean Average Precision (AP@[0.50:0.95])">
+        <UiCard title="mAP" subtitle="Saved validation output (AP@[0.50:0.95])">
           <div class="big">31.02%</div>
-          <div class="text-muted">Iteration 3 final performance</div>
+          <div class="text-muted">Weighted-loss run, epoch 260 · VERSION_3 validation · six classes</div>
           <div class="metric-help">
             mAP aggregates detection quality across IoU thresholds (0.50 → 0.95). A prediction only counts as correct when the predicted bounding box overlaps the ground-truth box by at least the threshold IoU; averaging across thresholds rewards both finding the abnormality and localizing it precisely.
           </div>
         </UiCard>
-        <UiCard title="Recall" subtitle="Average Recall">
+        <UiCard title="Recall" subtitle="Area-based Average Recall">
           <div class="big">83.6–91.4%</div>
-          <div class="text-muted">Across area sizes (Iteration 3)</div>
+          <div class="text-muted">Small to large areas, epoch 260 · VERSION_3 validation</div>
           <div class="metric-help" aria-live="polite">
             Recall is the fraction of ground-truth abnormalities that the model detects (i.e., produces a matching prediction). The displayed range reflects that smaller vs. larger abnormalities are detected with different success rates—higher recall means fewer missed findings.
           </div>
         </UiCard>
-        <UiCard title="AUC" subtitle="Average AUC (per abnormality)">
-          <div class="big">~0.82</div>
-          <div class="text-muted">Model discrimination signal (Iteration 3)</div>
+        <UiCard title="AUC" subtitle="Per-abnormality evaluation">
+          <div class="big">Not verified</div>
+          <div class="text-muted">Exact numeric AUC values are pending a matched run and validation split.</div>
           <div class="metric-help" aria-live="polite">
-            AUC (Area Under the ROC Curve) summarizes how well the model ranks abnormal vs. normal instances across all decision thresholds. An AUC near 1.0 indicates strong separation (good discrimination); ~0.82 suggests the model reliably assigns higher scores to true abnormalities than to non-abnormal findings, though not perfectly.
+            AUC (Area Under the ROC Curve) summarizes how a model ranks abnormal versus normal cases across decision thresholds. The training notebook contains an ROC plot, but its exact class values and evaluation cohort have not been verified for this dashboard.
           </div>
         </UiCard>
 
       </div>
 
       <div class="grid-2" style="margin-top: 16px">
-        <UiCard title="Iteration comparison" subtitle="mAP improves over training iterations">
+        <UiCard title="Saved validation results" subtitle="Different experiment versions and class sets; not a head-to-head comparison">
           <ChartCanvas :config="iterationConfig" />
         </UiCard>
 
-        <UiCard title="Class performance" subtitle="AUC per abnormality (higher = better separation)">
-          <ChartCanvas :config="aucConfig" />
+        <UiCard title="Class performance" subtitle="Numeric AUC table pending verification">
+          <p class="text-muted">The published training notebook includes an ROC figure, but no numeric AUC table tied to the same validation split as the epoch-260 mAP result. Exact class values will be shown here when their run and cohort are verified.</p>
         </UiCard>
       </div>
 
       <div class="grid-2" style="margin-top: 16px">
-        <UiCard title="Precision/Recall" subtitle="Tradeoff (demo)">
+        <UiCard title="Precision/Recall" subtitle="Illustrative tradeoff — not measured CXRaide results">
           <ChartCanvas :config="prConfig" />
         </UiCard>
 
         <UiCard title="Notes" subtitle="How to interpret the charts">
           <ul class="list">
             <li>
-              <strong>Iteration comparison (mAP):</strong> mAP rises when the model both finds more true abnormalities (recall) and produces tighter boxes (better localization). The jump to Iteration 3 indicates a larger fraction of predictions pass the stricter overlap requirements.
+              <strong>Saved mAP outputs:</strong> the baseline notebook reports 0.92% at epoch 150 on VERSION_2 validation; the weighted-loss notebook reports 31.02% at epoch 260 on VERSION_3 validation. The splits and trained class sets differ, so these bars do not establish a controlled improvement.
             </li>
             <li>
-              <strong>AUC by abnormality:</strong> each bar is the model’s ranking ability for that abnormality. Higher AUC means the model scores true cases above non-cases across many possible decision thresholds.
+              <strong>AUC by abnormality:</strong> exact numeric values remain unverified for a matched run and cohort; the ROC figure in the training notebook is research context only.
             </li>
             <li>
-              <strong>Precision/Recall tradeoff:</strong> as confidence threshold increases, precision typically increases (fewer false positives) while recall may decrease (more missed findings). Choose a threshold based on the cost of missing vs. over-calling.
+              <strong>Precision/Recall tradeoff:</strong> the chart is schematic, not measured CXRaide performance. As the confidence threshold rises, precision often increases and recall can decrease. A real operating threshold would require a verified evaluation and expert review.
             </li>
           </ul>
           <div style="margin-top: 12px">
@@ -77,14 +77,13 @@ export default {
   computed: {
     iterationConfig() {
       return {
-        type: "line",
+        type: "bar",
         data: {
-          labels: ["Iteration 1", "Iteration 2", "Iteration 3"],
+          labels: ["Baseline · epoch 150 · V2", "Weighted · epoch 260 · V3"],
           datasets: [
             {
-              label: "mAP (AP@[0.50:0.95])",
-              data: [0.0092, 0.0079, 0.3102],
-              tension: 0.35,
+              label: "Saved mAP (AP@[0.50:0.95])",
+              data: [0.0092, 0.3102],
               borderColor: "#2563eb",
               backgroundColor: "rgba(37,99,235,0.10)",
               fill: true,
@@ -106,35 +105,6 @@ export default {
         },
       };
     },
-    aucConfig() {
-      return {
-        type: "bar",
-        data: {
-          labels: ["Cardiomegaly", "Effusion", "Nodule/Mass", "Infiltration"],
-          datasets: [
-            {
-              label: "AUC",
-              data: [0.86, 0.81, 0.79, 0.82],
-              backgroundColor: [
-                "rgba(220,38,38,0.28)",
-                "rgba(217,119,6,0.28)",
-                "rgba(37,99,235,0.28)",
-                "rgba(22,163,74,0.28)",
-              ],
-              borderColor: ["#dc2626", "#d97706", "#2563eb", "#16a34a"],
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { suggestedMin: 0.5, suggestedMax: 1.0 },
-          },
-        },
-      };
-    },
     prConfig() {
       return {
         type: "line",
@@ -143,14 +113,14 @@ export default {
           datasets: [
             {
               label: "Precision",
-              data: [0.78, 0.76, 0.73, 0.70, 0.66, 0.62, 0.57, 0.49, 0.41],
+              data: [0.41, 0.49, 0.57, 0.62, 0.66, 0.70, 0.73, 0.76, 0.78],
               borderColor: "#2563eb",
               tension: 0.3,
               pointRadius: 0,
             },
             {
               label: "Recall",
-              data: [0.34, 0.44, 0.55, 0.63, 0.72, 0.80, 0.86, 0.90, 0.92],
+              data: [0.92, 0.90, 0.86, 0.80, 0.72, 0.63, 0.55, 0.44, 0.34],
               borderColor: "#16a34a",
               tension: 0.3,
               pointRadius: 0,

@@ -37,6 +37,10 @@ The [CX-014 route audit](CX014_PUBLIC_ROUTE_DEPENDENCIES.md) traces each browser
 
 The [CX-016 Vercel preview plan](CX016_VERCEL_PREVIEW_PLAN.md) records current Hobby eligibility and limits, the proposed `client` project root/Vite `dist` settings, SPA routing, protected previews, owner-operated release gates, and rollback. Vercel remains a conditional static-host candidate; no project or deployment has been created.
 
+The [CX-017 metric provenance audit](CX017_METRIC_PROVENANCE.md) links the public Iteration 1 and Iteration 3 mAP and area-based recall values to saved training-notebook outputs. The Iteration 2 mAP, exact AUC bars/aggregate, and plotted precision/recall points lack a verified numeric source; the later weighted-loss experiment trains six classes. The owner authorized conservative treatment, and the Metrics/Research pages now give run context and withhold unsupported exact values.
+
+The [CX-019/020 readiness note](CX019_CX020_RELEASE_READINESS.md) records the local browser pass of all five routes, sample/simulation, expert-box drawing and CSV/PDF export with Flask stopped. Public landing/About copy now distinguishes the hosted simulation from local inference; narrow navigation and native image dragging were corrected. A full browser request log, hosted route behavior, wider responsive/load checks and preview parity remain release gates.
+
 CX-003 added focused Node/Python contract tests; CX-004/005/011 updated the demo tests. No CI workflow, schema, or migrations were found. Python syntax parsing passed for the two server source files. CX-011's focused client contract suite and targeted ESLint pass. Post-change browser interaction with Flask stopped, actual PDF rendering, model accuracy, hosted operation, and provider accounts remain unverified.
 
 ## Approved target direction and remaining gates
@@ -74,6 +78,8 @@ If persistence is later approved, use server-verified identity, explicit Postgre
 | Identity/data | Keep public demo without accounts or a database. | Supabase Auth/Postgres/Storage would add account and retention obligations without an approved current use. | Defer. Reopen only for an approved persistent radiologist workflow with authorization tests. |
 
 ## Phased direction
+
+The current, owner-facing sequence and grouped commit plan are kept at the top of [PROJECT_TASKS.md](../../PROJECT_TASKS.md): CX-017–019 are complete locally, and owner-operated protected preview/release (CX-020) is next. The local researcher/account path remains a later option requiring its own decision.
 
 0. Confirm the demo contract and approved public-upload/privacy policy; validate sample-image rights and the exact research evidence for displayed metrics.
 1. Capture current behavior in focused synthetic-data characterization tests and establish a runnable local baseline.

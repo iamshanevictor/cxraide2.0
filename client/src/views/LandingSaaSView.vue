@@ -34,8 +34,8 @@
             </h1>
 
             <p class="lead">
-              CXRaide 2.0 is a research platform for expert annotation workflows and AI-assisted chest X-ray abnormality detection,
-              including bounding-box localization, CSV annotation preservation, and structured radiology report generation.
+              Explore a chest X-ray sample, draw bounding-box annotations, view preset simulated findings,
+              and export research demo results. Trained model inference is a separate local research workflow.
             </p>
 
             <div class="hero-actions">
@@ -65,7 +65,7 @@
                 </div>
                 <div class="preview-item">
                   <div class="k">Pipeline</div>
-                  <div class="v">Upload → AI → Review → Export</div>
+                  <div class="v">Sample → Annotate → Simulate → Export</div>
                 </div>
                 <div class="preview-item">
                   <div class="k">Data</div>
@@ -90,8 +90,8 @@
           <div class="section-head">
             <h2>Solving a time-sensitive clinical workflow (research focus)</h2>
             <p class="text-muted">
-              Chest X-ray interpretation is time-sensitive and requires expert radiologists. CXRaide 2.0 supports experts by combining
-              AI-assisted detection with structured, human-in-the-loop review.
+              Chest X-ray interpretation is time-sensitive and requires expert radiologists. This public prototype
+              demonstrates annotation and review with a sample image and preset simulated findings.
             </p>
           </div>
 
@@ -103,11 +103,11 @@
               </p>
             </UiCard>
 
-            <UiCard title="AI-Assisted Detection" subtitle="SSD300_VGG16 + confidence scoring">
+            <UiCard title="Local Model Research" subtitle="SSD300_VGG16 experiments">
               <ul class="list">
-                <li>AI provides initial abnormality localization and confidence scoring.</li>
-                <li>Bounding boxes are generated to support expert verification.</li>
-                <li>Outputs are designed for structured review—not standalone decision-making.</li>
+                <li>Separate local experiments explore abnormality localization and confidence scoring.</li>
+                <li>The hosted demo shows preset examples; it does not analyze the sample image.</li>
+                <li>Research outputs require expert review and are not clinical decisions.</li>
               </ul>
             </UiCard>
 
@@ -141,7 +141,8 @@
           <div class="section-head compact-head">
             <h2>End-to-end research workflow</h2>
             <p class="text-muted">
-              The prototype combines model inference, expert review, coordinate preservation, and structured export.
+              The public demo combines a sample image, manual review, local coordinate export, and a simulated report.
+              Model inference remains a separate local research workflow.
             </p>
           </div>
 
@@ -157,7 +158,7 @@
             <div class="strip-card">
               <div class="strip-title"><i class="bi bi-diagram-3"></i> Research Pipeline</div>
               <div class="strip-text">
-                NIH + VinBig datasets with three training iterations and a dedicated performance dashboard.
+                NIH and VinBigData research sources, saved validation results, and a performance dashboard with run context.
               </div>
             </div>
             <div class="strip-card">
@@ -166,7 +167,7 @@
             </div>
             <div class="strip-card">
               <div class="strip-title"><i class="bi bi-check2-circle"></i> Human-in-the-loop Review</div>
-              <div class="strip-text">AI suggestions are verified and refined by experts before export.</div>
+              <div class="strip-text">Visitors can edit annotations; preset findings demonstrate a possible expert review flow.</div>
             </div>
           </div>
         </div>
@@ -202,28 +203,28 @@ export default {
       workflow: [
         {
           index: "1",
-          label: "Upload Chest X-ray",
-          detail: "A chest X-ray is loaded into the research workspace.",
+          label: "Load Public Sample",
+          detail: "Load the bundled chest X-ray sample into the public workspace.",
         },
         {
           index: "2",
-          label: "AI Detection (SSD300_VGG16)",
-          detail: "AI proposes abnormality labels with confidence scoring and bounding boxes.",
+          label: "Show Simulated Findings",
+          detail: "Preset example labels and boxes illustrate a result; no model analyzes the sample.",
         },
         {
           index: "3",
           label: "Expert Review",
-          detail: "Radiologists verify, refine, or add bounding-box annotations.",
+          detail: "Draw and edit expert-style bounding boxes on the sample image.",
         },
         {
           index: "4",
-          label: "Save Bounding Boxes",
-          detail: "Reviewed coordinates and labels are preserved for reproducibility (CSV).",
+          label: "Review Bounding Boxes",
+          detail: "Review coordinates and labels before a local CSV export.",
         },
         {
           index: "5",
           label: "Generate Report",
-          detail: "Structured report text is produced from reviewed findings (Findings, Impression, Recommendations).",
+          detail: "Generate a research-only template report from the simulated demo scenario.",
         },
         {
           index: "6",
@@ -291,6 +292,15 @@ main {
 .links a:hover { color: var(--primary); text-decoration: none; }
 
 .cta { display: flex; align-items: center; gap: 6px; }
+
+@media (max-width: 860px) {
+  .links { display: none; }
+}
+
+@media (max-width: 520px) {
+  .logo { max-width: 170px; }
+  .cta > :first-child { display: none; }
+}
 
 .hero { padding: 34px 0 18px; }
 .hero-inner { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 22px; align-items: start; }

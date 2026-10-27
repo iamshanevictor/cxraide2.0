@@ -92,7 +92,7 @@
               @pointerup="onPointerUp"
               @pointerleave="onPointerLeave"
             >
-              <img ref="img" :src="imageUrl" class="img" alt="Public chest X-ray sample for annotation demonstration" @load="syncImageMetrics" />
+              <img ref="img" :src="imageUrl" class="img" alt="Public chest X-ray sample for annotation demonstration" draggable="false" @load="syncImageMetrics" />
               <div class="demo-watermark" aria-label="Research demo. Simulated results. Not for diagnosis.">RESEARCH DEMO · SIMULATED RESULTS · NOT FOR DIAGNOSIS</div>
 
               <!-- Expert boxes -->

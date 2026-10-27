@@ -29,9 +29,9 @@
 
           <UiCard title="System Overview" subtitle="Human-in-the-loop research workflow">
             <p class="p">
-              CXRaide 2.0 combines AI-assisted detection, bounding-box localization, expert annotation,
-              annotation preservation, and structured report generation. AI provides initial predictions while
-              radiologists review, verify, and refine findings.
+              The research workflow combines AI-assisted detection, bounding-box localization, expert annotation,
+              and structured report generation. The public demo uses preset simulated findings and lets visitors
+              draw annotations and export them locally; local model experiments are a separate workflow.
             </p>
             <div class="pipeline">
               <div v-for="step in workflow" :key="step" class="step"><span class="num">{{ step.number }}</span><span>{{ step.label }}</span></div>
@@ -50,21 +50,21 @@
             <div class="dataset-list">
               <div class="dataset-row">
                 <strong>NIH Chest X-ray Dataset</strong>
-                <span>112,120 images (bounding-box annotated subset used).</span>
+                <span>112,120 source images; only a selected annotated subset entered the research preprocessing.</span>
               </div>
               <div class="dataset-row">
                 <strong>VinBigData Chest X-ray Dataset</strong>
-                <span>15,000 radiologist-annotated images; multiple annotations merged using Weighted Box Fusion.</span>
+                <span>15,000 source training images; selected annotations were processed with Weighted Box Fusion.</span>
               </div>
               <div class="dataset-row">
                 <strong>Final Combined Dataset</strong>
-                <span>NIH + VinBig; approximately 4,850 curated images.</span>
+                <span>One saved preprocessing version reports 4,850 unique image IDs; this is not the final model's verified training count.</span>
               </div>
             </div>
           </UiCard>
 
 
-          <UiCard title="Detected Abnormalities" subtitle="Nine supported categories">
+          <UiCard title="Research Label Vocabulary" subtitle="Nine labels appear in preprocessing and earlier work; the later weighted-loss run trained six classes">
             <div class="tag-panel">
               <span v-for="item in abnormalities" :key="item" class="pill">{{ item }}</span>
             </div>
@@ -80,7 +80,7 @@
         <div class="grid-2" style="margin-top: 16px">
           <UiCard title="Model Architecture" subtitle="SSD300_VGG16 explained simply">
             <p class="p">
-              The system uses SSD300_VGG16, an object detection model that scans a resized 300 x 300 chest X-ray
+              The research models use SSD300_VGG16, an object detection architecture with a nominal 300 × 300 input. It scans a chest X-ray
               image and predicts both abnormality labels and bounding-box locations. VGG16 extracts image features,
               while the SSD detection heads estimate class probabilities, confidence scores, and box coordinates.
             </p>
@@ -94,7 +94,7 @@
           <UiCard title="Training Strategy" subtitle="Transfer learning and balanced sampling">
             <ul class="list">
               <li>ImageNet pretrained weights for transfer learning.</li>
-              <li>Focal Loss for classification and Smooth L1 Loss for localization.</li>
+              <li>Class-weighted loss experiments for imbalance handling.</li>
               <li>SGD optimization with class balancing and stratified sampling.</li>
               <li>Pascal VOC conversion with XML annotation generation.</li>
             </ul>
@@ -105,8 +105,8 @@
           <UiCard title="Annotation Tool" subtitle="Expert annotation preservation">
             <ul class="list">
               <li>Manual bounding box creation, editing, and zoom support.</li>
-              <li>Expert abnormality labeling and save annotations functionality.</li>
-              <li>Saved fields: image filename, abnormality label, and bounding-box coordinates.</li>
+              <li>Expert abnormality labeling with local CSV export in the public demo.</li>
+              <li>Exported fields include image filename, abnormality label, and bounding-box coordinates.</li>
               <li>CSV export for reproducibility, validation, and future model improvement.</li>
             </ul>
           </UiCard>
@@ -125,7 +125,7 @@
           <UiCard title="Key Findings" subtitle="Summary of final iteration">
             <ul class="list">
               <li>The system preserves expert annotations and bounding-box coordinates.</li>
-              <li>Iteration 3 substantially improved abnormality detection performance.</li>
+              <li>The later weighted-loss notebook reports higher saved validation mAP at epoch 260; its split and six-class scope differ from the earlier nine-class baseline, so this is not a controlled head-to-head comparison.</li>
               <li>The platform demonstrates the feasibility of combining AI detection, expert annotation, and reporting.</li>
               <li>Localization accuracy remains an area requiring further improvement.</li>
             </ul>
@@ -165,7 +165,7 @@ export default {
         { number: "1", label: "Upload Chest X-Ray" },
         { number: "2", label: "AI Detection" },
         { number: "3", label: "Expert Review" },
-        { number: "4", label: "Save Coordinates" },
+        { number: "4", label: "Export Coordinates" },
         { number: "5", label: "Generate Report" },
         { number: "6", label: "Export CSV/PDF" },
       ],

@@ -6,7 +6,7 @@
       </RouterLink>
 
       <nav class="links" aria-label="Primary">
-        <RouterLink :to="{ path: '/', hash: '#features' }">Features</RouterLink>
+        <RouterLink :to="{ path: '/', hash: '#overview' }">Overview</RouterLink>
         <RouterLink to="/research">Study</RouterLink>
         <RouterLink to="/metrics">Metrics</RouterLink>
         <RouterLink to="/about">About</RouterLink>

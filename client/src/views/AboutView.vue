@@ -12,8 +12,9 @@
       <div class="grid-2">
         <UiCard title="Project" subtitle="What CXRaide 2.0 is">
           <p class="p">
-            CXRaide 2.0 is an AI-assisted chest X-ray annotation and abnormality detection tool.
-            It supports expert bounding box annotation, export to CSV, AI predictions (SSD300_VGG16), and structured report generation.
+            CXRaide 2.0 is a chest X-ray annotation research prototype. The public demo lets visitors
+            annotate a bundled sample, export boxes to CSV, explore preset simulated findings, and generate a demo report.
+            SSD300_VGG16 model experiments run separately in the local research workflow.
           </p>
           <div class="callout">
             This platform is not a medical device. It must not be used for clinical diagnosis or treatment decisions.
@@ -23,13 +24,8 @@
         <UiCard title="Team" subtitle="Research prototype authors">
           <p class="p" style="margin-top:0;">
             CXRaide 2.0 is presented as a research prototype for PCSC 2025.
-            If you have author/institution details, add them here.
+            Author and institution details are pending publication verification.
           </p>
-          <ul class="list">
-            <li>Author names</li>
-            <li>Institution / university</li>
-            <li>Contact email (optional)</li>
-          </ul>
         </UiCard>
 
         <UiCard title="Citation" subtitle="How to reference">
