@@ -17,7 +17,7 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 
 ## Quick Queue
 
-CX-014 is owner-approved. CX-015 implementation and deterministic checks are complete; owner review is next. Its public build excludes legacy route chunks and backend API URLs. Manual browser testing and bug-fix work remain deferred until planned development is complete. No hosting choice has been approved.
+CX-014 and CX-015 are owner-approved. CX-016's Vercel static-preview plan awaits owner review; no project or deployment exists. CX-017 is prepared to trace published metrics to research evidence before release. Manual browser testing and bug-fix work remain deferred until planned development is complete.
 
 | ID | Status | Priority | Route | Executor | Task | Depends on | Validation gate |
 |---|---|---|---|---|---|---|---|
@@ -35,8 +35,9 @@ CX-014 is owner-approved. CX-015 implementation and deterministic checks are com
 | CX-012 | DONE | P1 | GPT-6 Luna · Low for file/provenance extraction; GPT-6 Sol · Low for source-term analysis | Owner selected/identified project datasets; Codex reviewed | Review the owner-selected project sample and dataset references | CX-011 owner confirmation; owner supplied sample and identified project training/validation sources | File format and visible content documented; source pages/terms recorded; exact source-record match noted as unverified |
 | CX-013 | DONE | P1 | GPT-6 Luna · Low | Codex implements; owner directed use of supplied sample | Add the owner-selected chest X-ray sample to the public demo | CX-012 review and owner approval to proceed with supplied sample | Bundled sample, visible dataset references and prominent demo watermark; preset findings remain simulated and do not analyze the image; focused contract checks pass |
 | CX-014 | DONE | P1 | GPT-6 Sol · Low for security/architecture review; GPT-6 Luna · Low for route tracing and documentation | Codex audited; owner approved 2026-10-27 | Audit public routes for backend/API dependencies and hosting implications | CX-011 owner confirmation; current route map and approved static-demo direction | Route audit and architecture update complete; `git diff --check` passed; owner approved public-build boundary |
-| CX-015 | WAITING_ON_OWNER | P1 | GPT-6 Luna · Low; Sol · Low only if a new auth/security conflict appears | Codex implements; owner reviews result | Isolate public showcase routes from local researcher routes in the static build | CX-014 owner approval (“done 014”, 2026-10-27) | 8/8 demo contract tests, targeted router/demo lint, production build pass; generated bundle has no Flask API URLs or legacy route chunks; manual browser review deferred |
-| CX-016 | PLANNED | P1 | GPT-6 Sol · Low for provider/release architecture; GPT-6 Luna · Low for deterministic artifact checks | Codex prepares; owner performs account/deployment operations | Prepare a Vercel static preview release plan | Owner review of CX-015 public bundle and route boundary | Current Vercel Hobby eligibility, build/output/SPA settings and limits verified from official docs; preview steps and rollback/release gates documented; no account or deployment change |
+| CX-015 | DONE | P1 | GPT-6 Luna · Low; Sol · Low only if a new auth/security conflict appears | Codex implemented; owner approved 2026-10-27 | Isolate public showcase routes from local researcher routes in the static build | CX-014 owner approval (“done 014”, 2026-10-27) | 8/8 demo contract tests, targeted router/demo lint, production build pass; generated bundle has no Flask API URLs or legacy route chunks; owner approved 015 |
+| CX-016 | WAITING_ON_OWNER | P1 | GPT-6 Sol · Low for provider/release architecture; GPT-6 Luna · Low for deterministic artifact checks | Codex prepared; owner reviews before account/deployment operations | Prepare a Vercel static preview release plan | CX-015 owner approval | Current Vercel Hobby eligibility, build/output/SPA settings and limits verified from official docs; preview steps and rollback/release gates documented; no account or deployment change |
+| CX-017 | PLANNED | P1 | GPT-6 Sol · Low for scientific claim review; GPT-6 Luna · Low for bounded extraction | Codex traces; owner reviews publication claims | Trace displayed public metrics to training evidence | Owner review of CX-016 plan; existing D6 metric-publication gate | Metric-by-metric source map and publication recommendation; no invented scores or model changes |
 
 ## How to Use This File
 
@@ -260,7 +261,7 @@ CX-014 is owner-approved. CX-015 implementation and deterministic checks are com
 ## CX-015 — Isolate static showcase routes
 
 - **Objective:** Give the public static build an explicit route/navigation boundary so visitors see only `/`, `/demo`, `/research`, `/metrics`, and `/about`; retain login, home, annotation, upload, and Flask workflows in local development.
-- **Priority / status:** P1 / **WAITING_ON_OWNER**. **Executor:** Codex implements; owner reviews result.
+- **Priority / status:** P1 / **DONE**. **Executor:** Codex implemented; owner approved 2026-10-27.
 - **Model and effort:** GPT-6 Luna · Low for scoped code/tests/docs; GPT-6 Sol · Low only for a newly surfaced security decision.
 - **Dependencies:** Owner approves CX-014's proposed public-build boundary. `passed, proceed 015` records that approval and authorizes this task.
 - **Inspect first:** `docs/architecture/CX014_PUBLIC_ROUTE_DEPENDENCIES.md`, `client/src/router/index.js`, `client/src/components/PublicTopNav.vue`, `client/src/App.vue`, relevant landing links, `client/package.json`, and focused route tests.
@@ -270,12 +271,12 @@ CX-014 is owner-approved. CX-015 implementation and deterministic checks are com
 - **Deliverables:** Reviewable frontend boundary, focused tests, updated architecture/session; no hosting action.
 - **Commit title:** `feat: isolate public demo routes`.
 
-**Completion evidence:** `router/index.js` registers five showcase routes for production and retains legacy login/researcher routes for local development; the unknown-path fallback redirects to `/`. The public demo now uses a local color map rather than importing `modelService`, so the production demo chunk does not pull in the local API URL. `node --test tests/demo-contract.test.cjs` passed 8/8; targeted ESLint on the router and demo view passed with the existing stale Browserslist-data notice; `npm run build` passed with the existing large demo chunk warning. Generated `dist/assets` search found no `localhost:5000`, `/api/predict`, `/api/model-status`, `check-session`, or legacy page component chunks. `git diff --check` passed. Manual browser/network validation remains deferred. Owner review is pending.
+**Completion evidence:** `router/index.js` registers five showcase routes for production and retains legacy login/researcher routes for local development; the unknown-path fallback redirects to `/`. The public demo now uses a local color map rather than importing `modelService`, so the production demo chunk does not pull in the local API URL. `node --test tests/demo-contract.test.cjs` passed 8/8; targeted ESLint on the router and demo view passed with the existing stale Browserslist-data notice; `npm run build` passed with the existing large demo chunk warning. Generated `dist/assets` search found no `localhost:5000`, `/api/predict`, `/api/model-status`, `check-session`, or legacy page component chunks. `git diff --check` passed. Manual browser/network validation remains deferred. Owner approved with “015 approved. proceed 016”.
 
 ## CX-016 — Prepare Vercel static preview release plan
 
 - **Objective:** Verify current Vercel static Vite hosting requirements for the five-route public build and prepare an owner-operated preview release procedure.
-- **Priority / status:** P1 / **PLANNED**. **Executor:** Codex prepares the review package; owner operates account and deployment steps.
+- **Priority / status:** P1 / **WAITING_ON_OWNER**. **Executor:** Codex prepared the review package; owner operates account and deployment steps.
 - **Model and effort:** GPT-6 Sol · Low for provider/release architecture; GPT-6 Luna · Low for deterministic artifact/configuration checks.
 - **Dependencies:** Owner review of CX-015's public route boundary and generated production bundle. `passed, proceed 016` authorizes the recorded scope.
 - **Inspect first:** CX-014 route audit, `client/vercel.json`, `client/package.json`, `client/vite.config.js`, Vercel's current official Vite, Hobby plan, and deployment documentation.
@@ -285,6 +286,21 @@ CX-014 is owner-approved. CX-015 implementation and deterministic checks are com
 - **Deliverables:** Concise provider-specific release plan and updated architecture/session; no deployment.
 - **Commit title:** `docs: prepare static preview release plan`.
 
+**Completion evidence:** [CX-016 Vercel preview plan](docs/architecture/CX016_VERCEL_PREVIEW_PLAN.md) uses current official Vercel Vite, monorepo, build, Hobby, limits, protection, and rollback documentation. It records local build artifact/configuration evidence and the owner-operated preview and release gates. No Vercel account, project, or deployment was touched. Owner review pending on Hobby eligibility and provider direction.
+
+## CX-017 — Trace public metric provenance
+
+- **Objective:** Map every quantitative claim shown on the public metrics/research pages to a specific training run, dataset split, evaluation method, and source artifact in the separate model-training repository, or label it unverified.
+- **Priority / status:** P1 / **PLANNED**. **Executor:** Codex traces evidence; owner reviews publication claims.
+- **Model and effort:** GPT-6 Luna · Low for bounded extraction; GPT-6 Sol · Low for scientific-claim interpretation, Medium only if evidence conflicts.
+- **Dependencies:** Owner reviews CX-016 release plan and authorizes this publication-evidence task; D6 requires verified mapping before exact metric publication. `passed, proceed 017` authorizes the recorded scope.
+- **Inspect first:** `client/src/views/MetricsDashboardView.vue`, `ResearchView.vue`, `docs/architecture/DECISIONS.md` D6, and only the relevant notebooks/results/README in the separate training repository.
+- **Implementation boundary:** Evidence mapping and recommendation only. Do not change metrics, train models, download weights/data, install dependencies, alter the public site, or publish claims in this task.
+- **Acceptance criteria:** Table of each visible number with source file/run, metric definition, split, checkpoint, confidence in match, and exact gaps; recommendation for retain, qualify, or withhold each claim. No estimate masquerades as an observed score.
+- **Validation:** Deterministic source and artifact cross-check; no application suite or manual browser test for this documentation task.
+- **Deliverables:** Short metrics provenance note, updated architecture/session, owner decisions needed before release.
+- **Commit title:** `docs: trace public metric provenance`.
+
 ## Queue rule
 
-Manual testing and bug fixing are deferred until planned development is complete; track them as end-stage validation/fix work, not blockers for source-based tasks. The owner supplied and approved a sample, identified the NIH Bbox and VinBigData datasets as project training/validation sources, and stated the sample has no PII. Exact per-image source matching remains unverified. CX-014 is owner-approved; CX-015 awaits owner review after deterministic validation; CX-016 is prepared to verify current Vercel preview requirements if CX-015 is accepted. Do not retire legacy sign-in or duplicate screens without owner review. Archive completed task detail when this file makes the live queue hard to scan.
+Manual testing and bug fixing are deferred until planned development is complete; track them as end-stage validation/fix work, not blockers for source-based tasks. The owner supplied and approved a sample, identified the NIH Bbox and VinBigData datasets as project training/validation sources, and stated the sample has no PII. Exact per-image source matching remains unverified. CX-015 is owner-approved; CX-016 awaits owner review; CX-017 is prepared as the metric-publication evidence task. Do not retire legacy sign-in or duplicate screens without owner review. Archive completed task detail when this file makes the live queue hard to scan.

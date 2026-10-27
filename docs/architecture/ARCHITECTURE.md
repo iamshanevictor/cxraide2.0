@@ -35,6 +35,8 @@ The source-backed public demo behavior and privacy findings are recorded in the 
 
 The [CX-014 route audit](CX014_PUBLIC_ROUTE_DEPENDENCIES.md) traces each browser route's API and data path. The five showcase routes are source-compatible with static hosting; legacy login and researcher routes still depend on Flask. CX-015 selects only the five showcase routes in production builds and retains legacy routes/services in local development. The public demo uses its own pure color lookup rather than importing `modelService`; generated production assets contain no local Flask URLs or legacy route chunks. Focused contract tests, lint, and production build pass. This is not a hosting or deployment change.
 
+The [CX-016 Vercel preview plan](CX016_VERCEL_PREVIEW_PLAN.md) records current Hobby eligibility and limits, the proposed `client` project root/Vite `dist` settings, SPA routing, protected previews, owner-operated release gates, and rollback. Vercel remains a conditional static-host candidate; no project or deployment has been created.
+
 CX-003 added focused Node/Python contract tests; CX-004/005/011 updated the demo tests. No CI workflow, schema, or migrations were found. Python syntax parsing passed for the two server source files. CX-011's focused client contract suite and targeted ESLint pass. Post-change browser interaction with Flask stopped, actual PDF rendering, model accuracy, hosted operation, and provider accounts remain unverified.
 
 ## Approved target direction and remaining gates
