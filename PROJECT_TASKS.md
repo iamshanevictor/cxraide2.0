@@ -17,7 +17,7 @@ Maintain CXRaide as a public, research-only chest X-ray annotation showcase. Vis
 
 ## Quick Queue
 
-There is currently no `READY` task. CX-006 documented candidate source terms and remains subject to owner review before any image is added. Status and dependency evidence govern promotion; table order alone does not.
+**CX-010 is the sole `READY` task.** The owner confirmed the local demo opened and mock predictions worked (CX-009). Next, resolve whether the public demo needs a hosted Flask prediction API, since the UI is upload-free but the API accepts image requests. The direction remains a working public research demo; sample rights and public hosting are separate gates. Status and dependency evidence govern promotion; table order alone does not.
 
 | ID | Status | Priority | Route | Executor | Task | Depends on | Validation gate |
 |---|---|---|---|---|---|---|---|
@@ -28,6 +28,9 @@ There is currently no `READY` task. CX-006 documented candidate source terms and
 | CX-005 | DONE locally | P1 | GPT-6 Luna · Low | Codex | Restrict public demo UI to sample input | CX-001/003 and D1 approval | 7 focused client tests passed; browser run pending |
 | **CX-006** | **DONE locally** | P1 | GPT-6 Luna · Low for extraction; GPT-6 Sol · Low for rights/privacy review, Medium only if evidence conflicts | Codex + owner approval | Vet a chest X-ray sample candidate | D1 approval and CX-005 | Candidate source terms documented; exact image and rights/privacy approval remain owner gates |
 | CX-007 | DONE locally | P2 | GPT-6 Luna · Low for documentation; GPT-6 Sol · Low for routing judgment | Codex | Update model and effort routing | Owner preference | Workflow, queue and handoff aligned; `git diff --check` passed |
+| CX-008 | DONE locally | P1 | GPT-6 Luna · Low | Codex | Establish the local frontend/backend startup path | Current source and manifests | Commands and prerequisites documented; backend start observed; frontend/browser blocked by sandbox socket policy |
+| CX-009 | DONE | P1 | GPT-6 Luna · Low if follow-up troubleshooting is needed | Owner runs locally; Codex diagnoses reported output | Verify local browser-to-backend startup | CX-008 | Owner confirmed demo opened and mock predictions worked |
+| **CX-010** | **READY** | P1 | GPT-6 Sol · Low; GPT-6 Luna · Low for documentation | Codex proposes; owner reviews | Decide whether the public demo needs a hosted prediction API | CX-001, CX-003, CX-005, CX-009, D1/D4 approval | Options, payload/privacy implications, and recommendation recorded for owner review |
 
 ## How to Use This File
 
@@ -149,6 +152,47 @@ There is currently no `READY` task. CX-006 documented candidate source terms and
 - **Commit title:** `docs(ai): prefer Luna for scoped work`.
 - **Completion evidence (2026-10-27):** Official [model-selection guidance](https://developers.openai.com/api/docs/guides/model-selection) and [GPT-6 family guidance](https://developers.openai.com/api/docs/guides/latest-model) were reviewed. The current Codex model list includes `gpt-6-luna` and `gpt-6-sol` with Low/Medium effort. Routing was updated in `AGENTS.md`, `AI_DEVELOPMENT_WORKFLOW.md`, this queue, and `SESSION.md`. `git diff --check` passed. Editing documentation did not change the model running this chat; no application tests were needed.
 
+## CX-008 — Establish the local frontend/backend startup path
+
+- **Objective:** Give the owner exact, repository-backed steps to start the frontend and backend locally and understand which demo functions need each process.
+- **Priority / status:** P1 / **DONE locally**. **Executor:** Codex.
+- **Model and effort:** GPT-6 Luna · Low for bounded source inspection and documentation.
+- **Dependencies:** None; CX-001 architecture discovery is available as context.
+- **Inspect first:** Root and client READMEs, `run_frontend.ps1`, `run_backend.ps1`, `client/package.json`, Vite configuration, backend requirements, Flask entry points, environment examples, Dockerfiles and compose manifests if present, plus Git status.
+- **Implementation boundary:** Document the commands and observed prerequisites. Determine whether Docker is actually configured. Do not add Docker, change configuration, install dependencies, start deployment, or alter data. Run a process only if its dependencies are already installed and the operation is safe; otherwise identify the missing prerequisite and stop.
+- **Acceptance criteria:** A short local-start guide states prerequisites, exact PowerShell commands, expected local URLs/ports, which features need the backend, mock versus real model requirements, Docker availability, and any unverified steps. Distinguish inspected commands from successfully launched processes.
+- **Validation:** Check commands against source scripts/manifests; if existing dependencies permit a safe launch, report the observed result. No application tests are required for documentation-only work.
+- **Deliverables:** [Local startup guide](docs/architecture/LOCAL_DEVELOPMENT.md), updated `SESSION.md`, and completion evidence here.
+- **Commit title:** `docs(dev): map local startup`.
+- **Completion evidence (2026-10-27):** Inspected the README, both PowerShell launcher scripts, Vite/package settings, environment examples, Flask requirements and entry point, and searched for Docker/Compose files. No Docker configuration exists. The launcher scripts install packages automatically; manual no-install commands are documented in [LOCAL_DEVELOPMENT.md](docs/architecture/LOCAL_DEVELOPMENT.md). Existing venv imports passed and the Flask mock server started at `127.0.0.1:5000`, with PyTorch absent and lightweight fallback active. Vite binding and HTTP access were denied by this execution environment's socket policy, so browser and integration behavior remain unverified. No dependencies, configuration, or data were changed. Commit title: `docs(dev): map local startup`.
+
+## CX-009 — Verify the local startup on the owner's machine
+
+- **Objective:** Confirm the owner can open the frontend locally and reach the mock backend, or capture the exact failure for targeted troubleshooting.
+- **Priority / status:** P1 / **WAITING_ON_OWNER**. **Executor:** Owner runs the app; Codex interprets any reported output.
+- **Model and effort:** GPT-6 Luna · Low for routine troubleshooting; Sol · Low only if a security or architecture decision surfaces.
+- **Dependencies:** CX-008 local startup guide.
+- **Implementation boundary:** Run the commands in [LOCAL_DEVELOPMENT.md](docs/architecture/LOCAL_DEVELOPMENT.md) in two PowerShell terminals. Use mock mode and the synthetic demo image only. Do not upload real images/reports or paste secrets. No source changes or installs are part of this verification.
+- **Acceptance criteria:** The local frontend opens at `http://127.0.0.1:5173`, and the public synthetic demo can reach the mock backend at `http://127.0.0.1:5000`; otherwise, exact console/terminal errors are available for diagnosis.
+- **Validation:** Owner observes browser load and mock status/prediction flow, or supplies the error text with any secrets removed. No clinical or real-patient data.
+- **Deliverables:** Owner's startup result; if a source-backed defect is found, a separate small implementation task with acceptance criteria.
+- **Commit title:** `docs(dev): verify local startup`.
+- **Completion evidence (2026-10-27):** Owner confirmed the frontend opened and mock predictions worked using the local setup. Codex could not independently observe the browser because the execution sandbox denies local socket access. Commit title: `docs(dev): verify local startup`.
+
+## CX-010 — Decide whether the public demo needs a hosted prediction API
+
+- **Objective:** Recommend whether to keep a hosted mock prediction endpoint or move simulated results into the browser so the public showcase can run as a static site.
+- **Priority / status:** P1 / **READY**. **Executor:** Codex prepares options; owner reviews the direction.
+- **Model and effort:** GPT-6 Sol · Low for security and architecture analysis; GPT-6 Luna · Low for bounded documentation edits.
+- **Dependencies:** CX-001 demo/API contract, CX-003 characterization evidence, CX-005 public upload UI change, CX-009 successful local mock run, and approved D1/D4 directions.
+- **Inspect first:** `docs/architecture/DEMO_CONTRACT.md`, `docs/architecture/ARCHITECTURE.md`, `client/src/services/modelService.js`, `client/src/views/DemoWorkspaceView.vue`, `server/app.py`, `server/model_service.py`, and ADR-002/003.
+- **Implementation boundary:** Decision package only. No API removal, client rewrite, deployment, or provider/account change. Preserve annotation and simulated-result behavior in any recommendation.
+- **Acceptance criteria:** Compare browser simulation with a hosted mock API by required behavior, image transmission, abuse/security surface, deployment complexity/cost, and observable parity. Account for the finding that the public UI has no upload controls while the API accepts image uploads directly. State unknowns and recommend one option for owner approval.
+- **Validation:** Trace payload and response paths in source and existing characterization tests; do not add or run tests for this decision task. No real image or report data.
+- **Deliverables:** Concise options/recommendation note, updated task/session state, and owner review gate.
+- **Commit title:** `docs(arch): decide public prediction boundary`.
+- **Completion evidence:** Pending.
+
 ## Queue rule
 
-After CX-006, assess owner requests and concrete defects, then add the smallest justified next task. Do not retire the legacy sign-in or duplicate screens without owner review. Archive completed task detail when it makes this file hard to scan.
+After CX-010, wait for owner review of the public prediction boundary before making code changes. Then choose a sample only if its redistribution rights can be verified; otherwise retain the synthetic illustration. Inspect and address demo/API behavior needed for a safe public release before a hosting decision. Do not turn later stages into implementation tasks until the relevant code and owner gates are verified. Do not retire the legacy sign-in or duplicate screens without owner review. Archive completed task detail when it makes this file hard to scan.

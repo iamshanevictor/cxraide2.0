@@ -20,10 +20,10 @@ Updated: 2026-10-27. This is a concise working note, not an authorization to dep
 
 ## Next action
 
-`CX-005` and `CX-006` are `DONE locally`. CX-006's candidate research is complete, but no image is cleared for publication; the owner must verify redistribution rights, select a specific file, and approve its privacy review before an asset is added. There is no `READY` task. Do not perform cloud/account actions.
+`CX-005`, CX-006, CX-008, and CX-009 are complete. The owner confirmed the demo opened and mock predictions worked locally; Codex could not independently observe the browser because its sandbox denies local socket access. CX-006's research is complete, but no image is cleared for publication; the owner must verify redistribution rights, select a specific file, and approve its privacy review before an asset is added. **CX-010 is READY:** decide whether the public demo needs the Flask prediction API or can simulate results in the browser. The UI has no public upload controls, but the API still accepts image requests. The decision task must produce options for review before implementation.
 
 Owner model preference (2026-10-27): GPT-6 Luna · Low for most coding, tests and edits; Luna · Medium only when a bounded task needs it. GPT-6 Sol · Low for architecture/security/data review and Sol · Medium for consequential conflicting evidence. Avoid Sol · High and Astra as routine routes. For future sample-file review, use Luna · Low for metadata/source extraction and Sol · Low for privacy/rights analysis; use Sol · Medium only for conflicting evidence. Record intended route and actual model/effort when the runtime exposes them.
 
-`CX-007` recorded this routing update. CX-006 documentation title: `docs(demo): vet sample provenance`. Proposed CX-007 title: `docs(ai): prefer Luna for scoped work`. No commits were created automatically by these turns.
+`CX-007` recorded this routing update. CX-006 title: `docs(demo): vet sample provenance`; CX-008 title: `docs(dev): map local startup`; CX-009 title: `docs(dev): verify local startup`; proposed CX-010 title: `docs(arch): decide public prediction boundary`. No commits were created automatically by these turns.
 
 Task reports include a concise Conventional Commit title with an optional short scope. Task IDs stay in the queue. The recorded CX-005 title is `fix(demo): restrict public image input to samples`. No commit was created automatically by this turn.
